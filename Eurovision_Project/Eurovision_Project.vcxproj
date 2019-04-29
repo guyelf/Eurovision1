@@ -115,6 +115,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="eurovision.c" />
+    <ClCompile Include="Helper.c" />
+    <ClCompile Include="Judge.c" />
+    <ClCompile Include="Main.c" />
+    <ClCompile Include="Map.c" />
+    <ClCompile Include="State.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="eurovision.h" />
+    <ClInclude Include="helper.h" />
+    <ClInclude Include="judge.h" />
+    <ClInclude Include="list.h" />
+    <ClInclude Include="map.h" />
+    <ClInclude Include="state.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="libmtm.a" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
