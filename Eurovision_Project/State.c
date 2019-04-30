@@ -41,8 +41,14 @@ struct state_t {
 	 char* songPtr = malloc(strlen(songName)+1);//Null terminator
 	 
  	if (state == NULL || namePtr == NULL || songPtr == NULL)
-		 return NULL;
-
+ 	{
+		free(state);
+		free(namePtr);
+		free(songPtr);
+		return NULL;
+ 	}
+		 
+	//Todo - replace with memecpy OR strcpy
 	 //coping the names by value
 	int i = 0;
 	 while(*(namePtr+i)!= '\0')

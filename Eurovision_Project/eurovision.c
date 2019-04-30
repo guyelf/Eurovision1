@@ -37,7 +37,7 @@ static void freeInt(MapKeyElement e) {
 static int compareInt(MapKeyElement a, MapKeyElement b) {
 	return *(unsigned int *)a - *(unsigned int *)b;
 }
-/////////////
+///////////////
 
 //Map State related functions
 static MapDataElement copyStateData(MapDataElement data)
@@ -53,7 +53,6 @@ static MapDataElement copyStateData(MapDataElement data)
 static void freeStateData(MapDataElement data)
 {
 	stateDestroy((State)data);
-	free(data);
 }
 /// Map Judge related functions
 static MapDataElement copyJudgeData(MapDataElement judgeData) {
@@ -69,7 +68,6 @@ static MapDataElement copyJudgeData(MapDataElement judgeData) {
 static void freeJudgeData(MapDataElement data) {
 	if (data == NULL)return;
 	judgeDestroy((Judge)data);
-	free(data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
