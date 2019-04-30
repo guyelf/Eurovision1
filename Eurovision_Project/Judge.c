@@ -27,21 +27,17 @@ Judge judgeCreate(int judge_id,const char* judge_name, int* judge_votes) {
 	}
 
 	Judge new_judge = malloc(sizeof(*new_judge));
-	char* name_ptr = new_judge->judge_name;
-	int* votes_ptr = new_judge->judge_votes;
 
-	name_ptr = malloc(sizeof(strlen(judge_name) + 1));
-	votes_ptr = calloc(VotesNum, sizeof(int));
+	char* name_ptr = malloc(strlen(judge_name) + 1);
+	int* votes_ptr = calloc(VotesNum, sizeof(int));
 	if(name_ptr == NULL || votes_ptr == NULL)
 	{
 		free(name_ptr);
 		free(votes_ptr);
 		return NULL;
 	}
-	//used memcpy instead - remove comment after succeeding tests
-	//for (int i = 0; i < VotesNum; ++i) {
-	//	votesPtr[i] = judge_votes[i];
-	//}
+
+	//TODO: find a way to check if memcpy & strcpy fail w/o code duplication
 	new_judge->judge_id = judge_id;
 	new_judge->judge_name = strcpy(name_ptr, judge_name);
 	new_judge->judge_votes = memcpy(votes_ptr,judge_votes,(sizeof(int)*VotesNum));
