@@ -121,6 +121,14 @@ void updateVotesGiven(State state, int receiverId,removeOrAddVote flag)
 	if(state== NULL) return;
 
 	int* votes = mapGet(state->votes_given, &receiverId);
+
+	if (votes == NULL) //if receiver state doesn't exist
+	{
+		int first_vote = 1;
+		mapPut(state->votes_given, &receiverId, &first_vote);
+		return;
+	}
+
 	//do nothing if the giving state didn't vote for the receiving state 
 	if (flag == REMOVE_VOTE && (*votes) == 0)
 		return;
@@ -148,6 +156,5 @@ EurovisionResult isValidName(const char* name)
 	 }
 	 return EUROVISION_SUCCESS;
  }
-////////////////////////////////////////////////////////
 
 

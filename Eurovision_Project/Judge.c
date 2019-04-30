@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "helper.h"
 #include "judge.h"
 
 struct judge_t {
@@ -26,29 +26,27 @@ Judge judgeCreate(int judge_id,const char* judge_name, int* judge_votes) {
 		return NULL;
 	}
 
-	Judge newJudge = malloc(sizeof(*newJudge));
-	char* namePtr = newJudge->judge_name;
-	int* votesPtr = newJudge->judge_votes;
+	Judge new_judge = malloc(sizeof(*new_judge));
+	char* name_ptr = new_judge->judge_name;
+	int* votes_ptr = new_judge->judge_votes;
 
-	namePtr = malloc(sizeof(strlen(judge_name) + 1));
-	votesPtr = calloc(VotesNum, sizeof(int));
-
-	int i = 0;
-	while (*(judge_name + i) != '\0') {
-		*(namePtr + i) = *(judge_name + i);
-		i++;
+	name_ptr = malloc(sizeof(strlen(judge_name) + 1));
+	votes_ptr = calloc(VotesNum, sizeof(int));
+	if(name_ptr == NULL || votes_ptr == NULL)
+	{
+		free(name_ptr);
+		free(votes_ptr);
+		return NULL;
 	}
-	*(namePtr + i) = *(judge_name + i);
+	//used memcpy instead - remove comment after succeeding tests
+	//for (int i = 0; i < VotesNum; ++i) {
+	//	votesPtr[i] = judge_votes[i];
+	//}
+	new_judge->judge_id = judge_id;
+	new_judge->judge_name = strcpy(name_ptr, judge_name);
+	new_judge->judge_votes = memcpy(votes_ptr,judge_votes,(sizeof(int)*VotesNum));
 
-	for (i = 0; i < VotesNum; ++i) {
-		votesPtr[i] = judge_votes[i];
-	}
-
-	newJudge->judge_id = judge_id;
-	newJudge->judge_name = namePtr;
-	newJudge->judge_votes = votesPtr;
-
-	return newJudge;
+	return new_judge;
 }
 
 void judgeDestroy(Judge judge) {
@@ -60,8 +58,8 @@ void judgeDestroy(Judge judge) {
 }
 
 Judge judgeCopy(Judge judge) {
-	Judge newJudge = malloc(sizeof(*newJudge));
-	if (newJudge == NULL) return NULL;
-	newJudge = judgeCreate(judge->judge_id, judge->judge_name, judge->judge_votes);
-	return newJudge;
+	Judge new_judge = malloc(sizeof(*new_judge));
+	if (new_judge == NULL) return NULL;
+	new_judge = judgeCreate(judge->judge_id, judge->judge_name, judge->judge_votes);
+	return new_judge;
 }

@@ -66,7 +66,6 @@ static MapDataElement copyJudgeData(MapDataElement judgeData) {
 }
 
 static void freeJudgeData(MapDataElement data) {
-	if (data == NULL)return;
 	judgeDestroy((Judge)data);
 }
 
@@ -262,6 +261,7 @@ EurovisionResult eurovisionRemoveJudge(Eurovision eurovision, int judgeId) {
 	//check judgeId validity
 	if (judgeId < 0) return EUROVISION_INVALID_ID;
 	Judge judge = mapGet(eurovision->judges, &judgeId);
+	if (judge == NULL) return EUROVISION_JUDGE_NOT_EXIST;
 	int *judgeResults = getJudgeVotes(judge);
 	for (int i = 0; i < VotesNum; ++i) {
 		if (judgeResults[i] < 0) {

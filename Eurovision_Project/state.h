@@ -13,6 +13,7 @@ typedef char* stateData;
 
 typedef struct state_t *State;
 
+//enum for the add/remove vote functions - serves as a flag
 typedef enum removeOrAddVote_t
 {
 	ADD_VOTE,
@@ -31,8 +32,10 @@ void stateDestroy(State state);
 //returns a new state which is a copy of the given one (new memory allocation)
 State stateCopy(State state);
 
-
+//gets a string and returns if Eurovision_SUCCESS if it's a valid state name
 EurovisionResult isValidName(const char* name);
+
+//gets a string and returns if Eurovision_SUCCESS if it's a valid state ID
 EurovisionResult isValidId(const int id);
 
 //gets a state and returns the votesGiven map object of the state

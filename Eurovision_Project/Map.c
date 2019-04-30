@@ -352,9 +352,9 @@ MapResult mapClear(Map map) {
 
 	while (map->head->next != NULL)
 	{
-		MapResult state = mapRemove(map, map->head->next->key_element);
-		if (state != MAP_SUCCESS)
-			return state;
+		MapResult status = mapRemove(map, map->head->next->key_element);
+		if (status != MAP_SUCCESS)
+			return status;
 	}
 	map->size = 0;
 	return MAP_SUCCESS;

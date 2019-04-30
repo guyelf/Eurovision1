@@ -2,6 +2,7 @@
 #ifndef HELPER_H_
 #define HELPER_H_
 #pragma warning(disable:4996)
+#include "list.h"
 
 void swapFloat(float* a, float* b);
 
