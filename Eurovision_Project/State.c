@@ -3,17 +3,18 @@
 #include <string.h>
 #include "eurovision.h"
 #include "map.h"
+#include "helper.h"
 
 
 //implementing the struct
 struct state_t {
-	int stateId;
-	char* stateName; //Insert function to make sure its all lowercase
-	char* songName; // Insert function to make sure its all lowercase
+	int state_id;
+	char* state_name; //Insert function to make sure its all lowercase
+	char* song_name; // Insert function to make sure its all lowercase
 
 	 //went for maps eventually bc the stateId doesn't have to be a zero-based index
-	Map votesGiven; // will keep track of the number of votes this country gave to a different country 
-	Map pointsRecieved; // will keep track of the points each country gave to this state 
+	Map votes_given; // will keep track of the number of votes this country gave to a different country 
+	Map points_recieved; // will keep track of the points each country gave to this state 
 
 };
 
@@ -47,29 +48,11 @@ struct state_t {
 		free(songPtr);
 		return NULL;
  	}
-		 
-	//Todo - replace with memecpy OR strcpy
-	 //coping the names by value
-	int i = 0;
-	 while(*(namePtr+i)!= '\0')
-	 {
-		 *(namePtr + i) = *(stateName + i);
-		 i++;
-	 }
-	 *(namePtr + i) = *(stateName + i);//adding the null terminating character
-	 i = 0;
-	 while (*(songPtr+i) != '\0')
-	 {
-		 *(songPtr + i) = *(songName + i);
-		 i++;	 
-	 }
-	 *(songPtr + i) = *(songName + i);
-
-	 state->stateName = namePtr;
-	 state->songName = songPtr;
-	 state->stateId = id;
-	 state->votesGiven = mapCreate(copyInt,copyInt,freeInt,freeInt,compareInt);
-	 state->pointsRecieved = mapCreate(copyInt, copyInt, freeInt, freeInt, compareInt);
+	 state->state_name = strcpy(namePtr,stateName);
+	 state->song_name = strcpy(songPtr,songName);
+	 state->state_id = id;
+	 state->votes_given = mapCreate(copyInt,copyInt,freeInt,freeInt,compareInt);
+	 state->points_recieved = mapCreate(copyInt, copyInt, freeInt, freeInt, compareInt);
 	 return state;
  }
 
@@ -78,16 +61,16 @@ void stateDestroy(State state)
 	if (state == NULL)
 		return;
 
-	free(state->songName);
-	free(state->stateName);
-	mapDestroy(state->votesGiven);
-	mapDestroy(state->pointsRecieved);
+	free(state->song_name);
+	free(state->state_name);
+	mapDestroy(state->votes_given);
+	mapDestroy(state->points_recieved);
 	free(state);
 }
 
 State stateCopy(State state)
 {
-	State copy = stateCreate(state->stateId, state->stateName, state->songName);
+	State copy = stateCreate(state->state_id, state->state_name, state->song_name);
 	if (copy == NULL)
 		return NULL;
 	return copy;
@@ -98,23 +81,23 @@ State stateCopy(State state)
 Map getVotesGiven(State state)
  {
 	if (state == NULL) return NULL;
-	return state->votesGiven;
+	return state->votes_given;
  }
 
 Map getPointsReceived(State state)
 {
 	if (state == NULL) return NULL;
-	return state->pointsRecieved;
+	return state->points_recieved;
 }
 
 int* getStateIdPtr(State state)
  {
 	if (state == NULL) return NULL;
-	return &state->stateId;
+	return &state->state_id;
  }
 char * getStateName(State state)
  {
-	return state->stateName;
+	return state->state_name;
  }
 
 int getSizeofState()
@@ -127,9 +110,9 @@ int getSizeofState()
 
 MapResult setPointsReceivedStateToState(State curState, State givingState, int points)
  {
-	int* givingIdPtr = &givingState->stateId;
+	int* givingIdPtr = &givingState->state_id;
 	int* pointsPtr = &points;
-	return mapPut(curState->pointsRecieved, givingIdPtr, pointsPtr);
+	return mapPut(curState->points_recieved, givingIdPtr, pointsPtr);
  }
 
 
@@ -137,7 +120,7 @@ void updateVotesGiven(State state, int receiverId,removeOrAddVote flag)
  {
 	if(state== NULL) return;
 
-	int* votes = mapGet(state->votesGiven, &receiverId);
+	int* votes = mapGet(state->votes_given, &receiverId);
 	//do nothing if the giving state didn't vote for the receiving state 
 	if (flag == REMOVE_VOTE && (*votes) == 0)
 		return;
