@@ -295,7 +295,7 @@ static int getPointsFromRank(int rank)
 static int getPointsFromState(Eurovision eurovision, State givingState, MapKeyElement takingState)
 {
 	//inner function
-	assert(eurovision != NULL && givingState != NULL && takingState == NULL);
+	assert(eurovision != NULL && givingState != NULL && takingState != NULL);
 	if (!mapContains(getVotesGiven(givingState), takingState)) return 0;
 	
 	int takerVotes = *(int*) mapGet(getVotesGiven(givingState), takingState);
@@ -319,17 +319,28 @@ static MapResult setPointsReceivedState(Eurovision eurovision, State state)
 	assert(eurovision != NULL && state != NULL);
 
 	MapKeyElement stateIdPtr = getStateIdPtr(state);
-
-	MapKeyElement stateIterator = mapGetFirst(eurovision->states);
-	while(stateIterator != NULL)
+	
+	MAP_FOREACH(MapKeyElement,stateIterator,eurovision->states)
 	{
 		State curState = mapGet(eurovision->states, stateIterator);
 		int points = getPointsFromState(eurovision, curState, stateIdPtr);
 		MapResult status = setPointsReceivedStateToState(state, curState, points);
-		if( status != MAP_SUCCESS) 
+		if (status != MAP_SUCCESS)
 			return status;
-		stateIterator = mapGetNext(eurovision->states);
 	}
+
+	//Todo: replace the while loop below with the foreach above
+	//MapKeyElement stateIterator = mapGetFirst(eurovision->states);
+	//while(stateIterator != NULL)
+	//{
+	//	State curState = mapGet(eurovision->states, stateIterator);
+	//	int points = getPointsFromState(eurovision, curState, stateIdPtr);
+	//	MapResult status = setPointsReceivedStateToState(state, curState, points);
+	//	if( status != MAP_SUCCESS) 
+	//		return status;
+	//	stateIterator = mapGetNext(eurovision->states);
+	//}
+
 	return MAP_SUCCESS;
 }
 
