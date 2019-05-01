@@ -2,7 +2,12 @@
 #ifndef HELPER_H_
 #define HELPER_H_
 #pragma warning(disable:4996)
+#include <stdlib.h>
+#include <string.h>
 #include "list.h"
+#include <assert.h>
+#include "map.h"
+
 
 void swapFloat(float* a, float* b);
 
@@ -18,8 +23,13 @@ ListElement copyString(ListElement str);
 //function for listCreate to free the string's ptrs
 void freeString(ListElement str);
 
+MapKeyElement copyFloat(MapKeyElement e);
 
+int compareInt(MapKeyElement a, MapKeyElement b);
 
+void freeInt(MapKeyElement e);
+
+MapKeyElement copyInt(MapKeyElement e);
 
 
 

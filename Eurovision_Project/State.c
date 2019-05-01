@@ -18,23 +18,6 @@ struct state_t {
 
 };
 
- ////////////////// compare/copy/free functions for a Map of Integers ///////////////////////////////////
-
- static MapKeyElement copyInt(MapKeyElement e) {
-	 int *newInt = malloc(sizeof(int));
-	 if (newInt == NULL) return NULL;
-	 *newInt = *(int *)e;
-	 return newInt;
- }
-
- static void freeInt(MapKeyElement e) {
-	 free(e);
- }
-
- static int compareInt(MapKeyElement a, MapKeyElement b) {
-	 return *(int *)a - *(int *)b;
- }
- /////////////////////////////////////////////////////////////////////////////
  State stateCreate(int id, const char* stateName, const char* songName)
  {
 	 State state = malloc(sizeof(*state));
@@ -108,9 +91,10 @@ int getSizeofState()
 	return size;
  }
 
+//todo move to eurovision.c and change to static : setPointsReceivedStateToState
 MapResult setPointsReceivedStateToState(State curState, State givingState, int points)
  {
-	int* givingIdPtr = &givingState->state_id;
+	int* givingIdPtr = &(givingState->state_id);
 	int* pointsPtr = &points;
 	return mapPut(curState->points_recieved, givingIdPtr, pointsPtr);
  }

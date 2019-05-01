@@ -12,12 +12,12 @@
   } while (0);
 
 int main(int argc, char *argv[]) {
-    TEST(testAddState)
-    TEST(testRemoveState)
-    TEST(testAddJudge)
-    TEST(testRemoveJudge)
-    TEST(testAddVote)
-    TEST(testRemoveVote)
+    //TEST(testAddState)
+    //TEST(testRemoveState)
+    //TEST(testAddJudge)
+    //TEST(testRemoveJudge)
+    //TEST(testAddVote)
+    //TEST(testRemoveVote)
     TEST(testRunContest)
     TEST(testRunAudienceFavorite)
     TEST(testRunGetFriendlyStates)

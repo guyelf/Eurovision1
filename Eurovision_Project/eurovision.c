@@ -9,8 +9,8 @@
 #include <assert.h>
 #include <string.h>
 
-#define FIRST 1
-#define INIT_SIZE 20
+#define FIRST 0
+#define INIT_SIZE 10
 #define MAX_POINT 12
 
 struct eurovision_t
@@ -22,31 +22,14 @@ struct eurovision_t
 
 ////////////////////////////// state - map - related functions /////////////////////////////////////////
 
-//compare/copy/free functions for map keyElement (= unsigned int)
-static MapKeyElement copyInt(MapKeyElement e) {
-	unsigned int *newInt = malloc(sizeof(unsigned int));
-	if (newInt == NULL) return NULL;
-	*newInt = *(unsigned int *)e;
-	return newInt;
-}
 
-static void freeInt(MapKeyElement e) {
-	free(e);
-}
-
-static int compareInt(MapKeyElement a, MapKeyElement b) {
-	return *(unsigned int *)a - *(unsigned int *)b;
-}
-///////////////
 
 //Map State related functions
 static MapDataElement copyStateData(MapDataElement data)
 {
 	if (data == NULL) return NULL;
-	State newData = malloc(getSizeofState());
+	State newData = stateCopy((State)data);
 	if (newData == NULL) return NULL;
-
-	newData = stateCopy((State) data);
 	return newData;
 }
 
@@ -58,10 +41,8 @@ static void freeStateData(MapDataElement data)
 static MapDataElement copyJudgeData(MapDataElement judgeData) {
 	if (judgeData == NULL) return NULL;
 
-	Judge copyJudge = malloc(getJudgeSize());
+	Judge copyJudge = judgeCopy((Judge)judgeData);
 	if (copyJudge == NULL) return NULL;
-
-	copyJudge = judgeCopy((Judge)judgeData);
 	return copyJudge;
 }
 
@@ -252,8 +233,18 @@ EurovisionResult eurovisionAddJudge(Eurovision eurovision, int judgeId,
 	}
 
 	Judge newJudge = judgeCreate(judgeId, judgeName, judgeResults);
-	mapPut(eurovision->judges, &judgeId, newJudge);
-
+	if (newJudge == NULL)
+	{
+		eurovisionDestroy(eurovision);
+		return EUROVISION_OUT_OF_MEMORY;
+	}
+	MapResult status = mapPut(eurovision->judges, &judgeId, newJudge);
+	if(status == MAP_OUT_OF_MEMORY)
+	{
+		eurovisionDestroy(eurovision);
+		return EUROVISION_OUT_OF_MEMORY;
+	}
+	
 	return EUROVISION_SUCCESS;
 }
 
@@ -284,10 +275,10 @@ EurovisionResult eurovisionRemoveJudge(Eurovision eurovision, int judgeId) {
 //to the points system in the eurovision (no point for a #define for each rank)
 static int getPointsFromRank(int rank)
 {
-	if (rank > 10 || rank < 1) return 0;
-	if (rank == 1) return 12;
-	if (rank == 2) return 10;
-	return 11 - rank;
+	if (rank > 10 || rank < 0) return 0;
+	if (rank == 0) return 12;
+	if (rank == 1) return 10;
+	return 10 - rank;
 }
 
 //gets the eurovision system, a giving state and a taking state
@@ -298,13 +289,16 @@ static int getPointsFromState(Eurovision eurovision, State givingState, MapKeyEl
 	assert(eurovision != NULL && givingState != NULL && takingState != NULL);
 	if (!mapContains(getVotesGiven(givingState), takingState)) return 0;
 	
-	int takerVotes = *(int*) mapGet(getVotesGiven(givingState), takingState);
+	int num_votes = *(int*) mapGet(getVotesGiven(givingState), takingState);
+
+	//iterating through the votesGiven of the givingState
+	//and returns the amount of points the votes mean
 	MapKeyElement voteIterator = mapGetFirst(getVotesGiven(givingState));
 	int rank = FIRST;
 	while(voteIterator != NULL)
 	{
 		int curVotes = *(int*) mapGet(getVotesGiven(givingState), voteIterator);
-		if (takerVotes < curVotes)
+		if ((num_votes <= curVotes && (*(int*)voteIterator < *(int*)takingState)) || (num_votes < curVotes))
 			rank++;//losing
 		voteIterator = mapGetNext(getVotesGiven(givingState));
 	}
@@ -325,22 +319,10 @@ static MapResult setPointsReceivedState(Eurovision eurovision, State state)
 		State curState = mapGet(eurovision->states, stateIterator);
 		int points = getPointsFromState(eurovision, curState, stateIdPtr);
 		MapResult status = setPointsReceivedStateToState(state, curState, points);
+
 		if (status != MAP_SUCCESS)
 			return status;
 	}
-
-	//Todo: replace the while loop below with the foreach above
-	//MapKeyElement stateIterator = mapGetFirst(eurovision->states);
-	//while(stateIterator != NULL)
-	//{
-	//	State curState = mapGet(eurovision->states, stateIterator);
-	//	int points = getPointsFromState(eurovision, curState, stateIdPtr);
-	//	MapResult status = setPointsReceivedStateToState(state, curState, points);
-	//	if( status != MAP_SUCCESS) 
-	//		return status;
-	//	stateIterator = mapGetNext(eurovision->states);
-	//}
-
 	return MAP_SUCCESS;
 }
 
@@ -360,12 +342,17 @@ static MapResult setPointsReceived(Eurovision eurovision)
 		MapResult status = setPointsReceivedState(eurovision, curState);
 		if (status != MAP_SUCCESS)
 			return status;
+
+		MAP_FOREACH(MapKeyElement, deepIter, eurovision->states)
+		{
+			if (*(int*)deepIter == *(int*)stateIterator) break;
+		}
 		stateIterator = mapGetNext(eurovision->states);
 	}
 	return MAP_SUCCESS;
 }
 
-static int getAvgPointsReceived(State state)
+static float getAvgPointsReceived(State state)
 {
 	if (state == NULL) return -1;
 	MapKeyElement pointsIterator = mapGetFirst(getPointsReceived(state));
@@ -376,11 +363,11 @@ static int getAvgPointsReceived(State state)
 		count++;
 		pointsIterator = mapGetNext(getPointsReceived(state));
 	}
-	return (count == 0) ? 0 : sum / count;
+	return (count == 0) ? 0 : sum / (float) count;
 }
 
 //gets the avg points for a state from all the judges
-static int getAvgPointsJudge(Eurovision eurovision, State state)
+static float getAvgPointsJudge(Eurovision eurovision, State state)
 {
 	MapKeyElement judgeIterator = mapGetFirst(eurovision->judges);
 	int count = 0, sum = 0;
@@ -393,69 +380,63 @@ static int getAvgPointsJudge(Eurovision eurovision, State state)
 			if(votes[i] == *(getStateIdPtr(state)))
 			{
 				sum += getPointsFromRank(i);
-				count++;
 				break;
 			}
 		}
-
+		count++;
 		judgeIterator = mapGetNext(eurovision->judges);
 	}
 
-	return (count == 0) ? 0 : (sum / count);
+	return (count == 0) ? 0 : (sum / (float) count);
 }
 
-
+static List getResultList(Eurovision eurovision,Map map)
+{
+	List resultList = listCreate((CopyListElement)copyString, (FreeListElement)free);
+	if (resultList == NULL || map==NULL||eurovision==NULL) return NULL;
+	while(mapGetSize(map) > 0)
+	{
+		int maxStateId = -1;
+		float curPoints, maxPoints = -1;
+		MAP_FOREACH(MapKeyElement, curId, map)
+		{
+			curPoints = *(float*)mapGet(map, curId);
+			if (curPoints > maxPoints)
+			{
+				maxPoints = curPoints;
+				maxStateId = *((int*)curId);
+			}
+		}
+		State topState = mapGet(eurovision->states, &maxStateId);
+		printf("%s:%f\n", getStateName(topState), maxPoints);
+		listInsertLast(resultList, getStateName(topState));
+		mapRemove(map, &maxStateId);
+	}
+	return resultList;
+}
 
 List eurovisionRunContest(Eurovision eurovision, int audiencePercent)
 {
 	if (eurovision == NULL || audiencePercent > 100 || audiencePercent < 0)
 		return NULL;
 
-	float* points = calloc(INIT_SIZE, sizeof(int));
-	//string array for the states name
-	char** ranks = malloc(INIT_SIZE);
-	if (ranks == NULL || points == NULL) return NULL;
-
 	if (setPointsReceived(eurovision) != MAP_SUCCESS) return NULL;
 
-	MapKeyElement stateIterator = mapGetFirst(eurovision->states);
-	int i = 0, times = 1;
-	while(stateIterator != NULL)
+	Map resultMap = mapCreate(copyFloat, copyInt, (freeMapDataElements)free, (freeMapKeyElements)free, compareInt);
+
+	MAP_FOREACH(MapKeyElement,stateId,eurovision->states)
 	{
-		State curState = mapGet(eurovision->states, stateIterator);
-		if(i == times*INIT_SIZE-1)//realloc
-		{
-			points = realloc(points, INIT_SIZE);
-			ranks = realloc(ranks, INIT_SIZE);
-			if (ranks == NULL || points == NULL) 
-				return NULL;//in case of an error
-			times++;
-		}		
-
-		points[i] = (float)getAvgPointsReceived(curState)*((float)audiencePercent / 100) + (float)getAvgPointsJudge(eurovision, curState)*((100 - (float)audiencePercent) / 100);
-		ranks[i] = getStateName(curState);// just assigning ptrs
-		i++;
-		stateIterator = mapGetNext(eurovision->states);
+		State curState= mapGet(eurovision->states, stateId);
+		float statePoints = (float)getAvgPointsReceived(curState)* ((float)audiencePercent / 100) +
+			(float)getAvgPointsJudge(eurovision, curState)*((100 - (float)audiencePercent) / 100);
+		printf("%s:%f\n", getStateName(curState), statePoints);
+		mapPut(resultMap, stateId, &statePoints);
 	}
-	//sorts the points array and the ranks array according to that
-	sortPointsAndRank(points, ranks, INIT_SIZE*times);
-
-	List winners = listCreate(copyString, freeString);
-
-	//if the list should be empty, returns empty list.
-	if (points[0] == 0) return winners;
-
-	//fill up the list
-	listInsertFirst(winners, ranks[0]);
-	for (i = 1; i < INIT_SIZE*times; i++)
-	{
-		listInsertAfterCurrent(winners, ranks[i]);
-	}
-
-	free(points);
-	free(ranks);
-	return winners;
+	List resultList = getResultList(eurovision, resultMap);
+	mapDestroy(resultMap);
+	return resultList;
 }
+
 
 
 List eurovisionRunAudienceFavorite(Eurovision eurovision)

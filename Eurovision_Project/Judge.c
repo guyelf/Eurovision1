@@ -27,11 +27,11 @@ Judge judgeCreate(int judge_id,const char* judge_name, int* judge_votes) {
 	}
 
 	Judge new_judge = malloc(sizeof(*new_judge));
-
 	char* name_ptr = malloc(strlen(judge_name) + 1);
 	int* votes_ptr = calloc(VotesNum, sizeof(int));
-	if(name_ptr == NULL || votes_ptr == NULL)
+	if(name_ptr == NULL || votes_ptr == NULL || new_judge == NULL)
 	{
+		free(new_judge);
 		free(name_ptr);
 		free(votes_ptr);
 		return NULL;
@@ -54,8 +54,8 @@ void judgeDestroy(Judge judge) {
 }
 
 Judge judgeCopy(Judge judge) {
-	Judge new_judge = malloc(sizeof(*new_judge));
+	if (judge == NULL) return NULL;
+	Judge new_judge = judgeCreate(judge->judge_id, judge->judge_name, judge->judge_votes);
 	if (new_judge == NULL) return NULL;
-	new_judge = judgeCreate(judge->judge_id, judge->judge_name, judge->judge_votes);
 	return new_judge;
 }

@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "list.h"
 #include "helper.h"
-#include <assert.h>
+
 
 void swapFloat(float* a, float* b)
 {
@@ -29,7 +25,7 @@ static int indexOfMax(float * arr, int length)
 	}
 	return i_max;
 }
-
+//puts the max in the end of the array
 void sortPointsAndRank(float* points, char** ranks, int size)
 {
 	if (points == NULL || ranks == NULL) return;
@@ -52,3 +48,27 @@ void freeString(ListElement str)
 {
 	free(str);
 }
+
+//compare/copy/free functions for map keyElement (= unsigned int)
+MapKeyElement copyInt(MapKeyElement e) {
+	int *newInt = malloc(sizeof(int));
+	if (newInt == NULL) return NULL;
+	*newInt = *(int *)e;
+	return newInt;
+}
+
+void freeInt(MapKeyElement e) {
+	free(e);
+}
+
+int compareInt(MapKeyElement a, MapKeyElement b) {
+	return *(int *)a - *(int *)b;
+}
+
+MapKeyElement copyFloat(MapKeyElement e) {
+	float *newFloat = malloc(sizeof(float));
+	if (newFloat == NULL) return NULL;
+	*newFloat = *(float *)e;
+	return newFloat;
+}
+///////////////
