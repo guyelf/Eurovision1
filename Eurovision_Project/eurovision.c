@@ -22,8 +22,6 @@ struct eurovision_t
 
 ////////////////////////////// state - map - related functions /////////////////////////////////////////
 
-
-
 //Map State related functions
 static MapDataElement copyStateData(MapDataElement data)
 {
@@ -363,7 +361,7 @@ static MapResult setPointsReceived(Eurovision eurovision)
 	return MAP_SUCCESS;
 }
 
-static float getAvgPointsReceived(State state)
+static double getAvgPointsReceived(State state)
 {
 	if (state == NULL) return -1;
 	MapKeyElement pointsIterator = mapGetFirst(getPointsReceived(state));
@@ -374,11 +372,12 @@ static float getAvgPointsReceived(State state)
 		count++;
 		pointsIterator = mapGetNext(getPointsReceived(state));
 	}
-	return (count == 0) ? 0 : sum / (float) count;
+	if (count == 1) return 0;// if it's just one state, edge case
+	return (count == 0) ? 0 : sum / (double) (count-1);//minus the current state
 }
 
 //gets the avg points for a state from all the judges
-static float getAvgPointsJudge(Eurovision eurovision, State state)
+static double getAvgPointsJudge(Eurovision eurovision, State state)
 {
 	MapKeyElement judgeIterator = mapGetFirst(eurovision->judges);
 	int count = 0, sum = 0;
@@ -398,7 +397,7 @@ static float getAvgPointsJudge(Eurovision eurovision, State state)
 		judgeIterator = mapGetNext(eurovision->judges);
 	}
 
-	return (count == 0) ? 0 : (sum / (float) count);
+	return (count == 0) ? 0 : (sum / (double) count);
 }
 
 static List getResultList(Eurovision eurovision,Map map)
@@ -408,10 +407,10 @@ static List getResultList(Eurovision eurovision,Map map)
 	while(mapGetSize(map) > 0)
 	{
 		int maxStateId = -1;
-		float curPoints, maxPoints = -1;
+		double curPoints, maxPoints = -1;
 		MAP_FOREACH(MapKeyElement, curId, map)
 		{
-			curPoints = *(float*)mapGet(map, curId);
+			curPoints = *(double*)mapGet(map, curId);
 			if (curPoints > maxPoints)
 			{
 				maxPoints = curPoints;
@@ -433,40 +432,26 @@ List eurovisionRunContest(Eurovision eurovision, int audiencePercent)
 
 	if (setPointsReceived(eurovision) != MAP_SUCCESS) return NULL;
 
-	Map resultMap = mapCreate(copyFloat, copyInt, (freeMapDataElements)free, (freeMapKeyElements)free, compareInt);
+	Map resultMap = mapCreate(copyDouble, copyInt, (freeMapDataElements)free, (freeMapKeyElements)free, compareInt);
 
 	MAP_FOREACH(MapKeyElement,stateId,eurovision->states)
 	{
 		State curState= mapGet(eurovision->states, stateId);
-		float statePoints = (float)getAvgPointsReceived(curState)* ((float)audiencePercent / 100) +
-			(float)getAvgPointsJudge(eurovision, curState)*((100 - (float)audiencePercent) / 100);
-		printf("%s:%f\n", getStateName(curState), statePoints);
+		double statePoints = (double)getAvgPointsReceived(curState)* ((double)audiencePercent / 100) +
+			(double)getAvgPointsJudge(eurovision, curState)*((100 - (double)audiencePercent) / 100);
 		mapPut(resultMap, stateId, &statePoints);
 	}
+
 	List resultList = getResultList(eurovision, resultMap);
 	mapDestroy(resultMap);
 	return resultList;
 }
-
-
 
 List eurovisionRunAudienceFavorite(Eurovision eurovision)
 {
 	if (eurovision == NULL) return NULL;
 	return eurovisionRunContest(eurovision, 100);
 }
-
-//TODO: function below
-//List eurovisionRunGetFriendlyStates(Eurovision eurovision)
-//{
-//	if (eurovision == NULL) return NULL;
-////means that the contest hasn't run yet
-////checked if the first state has a pointsRecevied element or not
-//	if (mapGetFirst(getPointsReceived(mapGetFirst(eurovision->states))) == NULL)
-//		return NULL;
-//
-//	State curState = 
-//}
 
 /////////////////////////////////// FRIENDLY ///////////////////////////////////
 
@@ -509,9 +494,12 @@ List eurovisionRunGetFriendlyStates(Eurovision eurovision){
         eurovisionDestroy(eurovision);
 	    return NULL;
 	}
-
     //pointsReceived is not initialized until the contest runs
-    if(mapGetFirst(mapGetFirst(eurovision->states)) == NULL){
+	State firstState = mapGetFirst(eurovision->states);
+	if (firstState == NULL) return NULL;
+
+    if(mapGetSize(getPointsReceived(firstState)) == 0){
+		//if not set, sets the pointsReceived
         eurovisionRunAudienceFavorite(eurovision);
     }
 
