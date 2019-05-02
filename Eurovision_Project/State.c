@@ -20,6 +20,9 @@ struct state_t {
 
  State stateCreate(int id, const char* stateName, const char* songName)
  {
+	 if (stateName == NULL || songName == NULL)
+		 return NULL;
+
 	 State state = malloc(sizeof(*state));
 	 char* namePtr = malloc(strlen(stateName)+1);//Null terminator
 	 char* songPtr = malloc(strlen(songName)+1);//Null terminator
@@ -36,6 +39,12 @@ struct state_t {
 	 state->state_id = id;
 	 state->votes_given = mapCreate(copyInt,copyInt,freeInt,freeInt,compareInt);
 	 state->points_recieved = mapCreate(copyInt, copyInt, freeInt, freeInt, compareInt);
+
+	 if(state->votes_given == NULL || state->points_recieved == NULL)
+	 {
+		 stateDestroy(state);
+		 return NULL;
+	 }
 	 return state;
  }
 

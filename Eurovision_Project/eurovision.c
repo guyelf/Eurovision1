@@ -60,8 +60,13 @@ Eurovision eurovisionCreate()
 	Eurovision eurovision = (Eurovision) malloc(sizeof(*eurovision));
 
 	if (eurovision == NULL || states == NULL || judges == NULL)
+	{
+		mapDestroy(states);
+		mapDestroy(judges);
+		eurovisionDestroy(eurovision);
 		return NULL;
-
+	}
+		
 	eurovision->judges = judges;
 	eurovision->states = states;
 	return eurovision;
@@ -88,10 +93,15 @@ EurovisionResult eurovisionAddState(Eurovision eurovision, int stateId, const ch
 		return EUROVISION_STATE_ALREADY_EXIST;
 	
 	State newState = stateCreate(stateId, stateName, songName);
-
 	MapResult mapResult = mapPut(eurovision->states, &stateId, newState);
+	stateDestroy(newState);
+
 	if (mapResult != MAP_SUCCESS)
+	{
+		eurovisionDestroy(eurovision);
 		return EUROVISION_OUT_OF_MEMORY;
+	}
+		
 
 	return EUROVISION_SUCCESS;
 }
@@ -239,6 +249,7 @@ EurovisionResult eurovisionAddJudge(Eurovision eurovision, int judgeId,
 		return EUROVISION_OUT_OF_MEMORY;
 	}
 	MapResult status = mapPut(eurovision->judges, &judgeId, newJudge);
+	judgeDestroy(newJudge);
 	if(status == MAP_OUT_OF_MEMORY)
 	{
 		eurovisionDestroy(eurovision);
