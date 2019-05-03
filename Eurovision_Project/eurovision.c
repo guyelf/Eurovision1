@@ -327,21 +327,11 @@ static MapResult setPointsReceivedState(Eurovision eurovision, State state)
 	int stateId = getStateId(state);
 	MapKeyElement stateIdPtr = &stateId;
 
-	//Todo remove when done testing:
-	int count = 0, idNum = 0;
-	//todo://///////////////////////
 	MAP_FOREACH(MapKeyElement,stateIterator,eurovision->states)
 	{
 		State curState = mapGet(eurovision->states, stateIterator);
 		int points = getPointsFromState(eurovision, curState, stateIdPtr);
-		//todo: remove when done testing
-		char* curS = getStateName(state);
-		char* givS = getStateName(curState);
-		printf("%d. %s gave--> %s %d points\n total %d\n", idNum, givS, curS,points,count);
-		idNum++;
-		count++;
-		if (idNum == 16) idNum = 0;
-		//todo://///////////////////////////////////////////////////////////////////////////
+
 		MapResult status = setPointsReceivedStateToState(state, curState, points);
 
 		if (status != MAP_SUCCESS)
@@ -433,7 +423,6 @@ static List getResultList(Eurovision eurovision,Map map)
 			}
 		}
 		State topState = mapGet(eurovision->states, &maxStateId);
-		printf("%s:%f\n", getStateName(topState), maxPoints);
 		listInsertLast(resultList, getStateName(topState));
 		mapRemove(map, &maxStateId);
 	}
@@ -545,15 +534,6 @@ List eurovisionRunGetFriendlyStates(Eurovision eurovision){
         setPointsReceived(eurovision);
     }
 	//end check
-
-	//todo: remove when done testing
-	MAP_FOREACH(MapKeyElement,pointsIterator, pointsReceived1)
-    {
-		int p = *((int*)mapGet(pointsReceived1, pointsIterator));
-		char* givS = getStateName(mapGet(eurovision->states, pointsIterator));
-		printf("%s gave--> israel %d points\n", givS, p);
-    }
-	//todo till here
 
 	MAP_FOREACH(MapKeyElement, i, eurovision->states)
 	{
