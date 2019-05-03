@@ -1,7 +1,7 @@
 #pragma once
 #ifndef JUDGE_H_
 #define JUDGE_H_
-#define VotesNum 10
+#define VOTESNUM 10
 #include "map.h"
 
 typedef struct judge_t * Judge;
@@ -23,6 +23,15 @@ void judgeDestroy(Judge judge);
 //gets a judge
 //returns a new judge instance which is a copy of the given judge
 Judge judgeCopy(Judge judge);
+
+//checks if the given name for the judge is valid
+bool isValidJudgeName(char* name);
+
+//return the id associated with the given judge
+int getJudgeId(Judge judge);
+
+//return the name associated with the given judge
+char* getJudgeName(Judge judge);
 
 #endif /* JUDGE_H_ */
 

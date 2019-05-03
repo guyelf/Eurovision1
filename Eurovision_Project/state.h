@@ -53,9 +53,6 @@ int getSizeofState();
 //gets a state, returns the state name
 char * getStateName(State state);
 
-//sets the points given by the giving state in the pointsReceived map of the curState
-MapResult setPointsReceivedStateToState(State curState, State givingState, int points);
-
 
 // adds/removes 1 vote to receiverId state from the given state.
 void updateVotesGiven(State state, int receiverId,removeOrAddVote flag);

@@ -84,7 +84,6 @@ Map getPointsReceived(State state)
 
 int getStateId(State state)
  {
-	if (state == NULL) return NULL;
 	return state->state_id;
  }
 char * getStateName(State state)
@@ -101,12 +100,7 @@ int getSizeofState()
  }
 
 //todo move to eurovision.c and change to static : setPointsReceivedStateToState
-MapResult setPointsReceivedStateToState(State curState, State givingState, int points)
- {
-	int* givingIdPtr = &(givingState->state_id);
-	int* pointsPtr = &points;
-	return mapPut(curState->points_recieved, givingIdPtr, pointsPtr);
- }
+
 
 
 void updateVotesGiven(State state, int receiverId,removeOrAddVote flag)

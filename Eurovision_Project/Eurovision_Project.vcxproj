@@ -116,16 +116,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="eurovision.c" />
-    <ClCompile Include="eurovisionTests.c" />
-    <ClCompile Include="eurovisionTestsMain.c" />
     <ClCompile Include="Helper.c" />
     <ClCompile Include="Judge.c" />
+    <ClCompile Include="main.c" />
     <ClCompile Include="Map.c" />
     <ClCompile Include="State.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="eurovision.h" />
-    <ClInclude Include="eurovisionTests.h" />
     <ClInclude Include="helper.h" />
     <ClInclude Include="judge.h" />
     <ClInclude Include="list.h" />

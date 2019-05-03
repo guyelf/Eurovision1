@@ -28,7 +28,7 @@ Judge judgeCreate(int judge_id,const char* judge_name, int* judge_votes) {
 
 	Judge new_judge = malloc(sizeof(*new_judge));
 	char* name_ptr = malloc(strlen(judge_name) + 1);
-	int* votes_ptr = calloc(VotesNum, sizeof(int));
+	int* votes_ptr = calloc(VOTESNUM, sizeof(int));
 	if(name_ptr == NULL || votes_ptr == NULL || new_judge == NULL)
 	{
 		free(new_judge);
@@ -40,7 +40,7 @@ Judge judgeCreate(int judge_id,const char* judge_name, int* judge_votes) {
 	//TODO: find a way to check if memcpy & strcpy fail w/o code duplication
 	new_judge->judge_id = judge_id;
 	new_judge->judge_name = strcpy(name_ptr, judge_name);
-	new_judge->judge_votes = memcpy(votes_ptr,judge_votes,(sizeof(int)*VotesNum));
+	new_judge->judge_votes = memcpy(votes_ptr,judge_votes,(sizeof(int)*VOTESNUM));
 
 	return new_judge;
 }
@@ -59,3 +59,26 @@ Judge judgeCopy(Judge judge) {
 	if (new_judge == NULL) return NULL;
 	return new_judge;
 }
+
+bool isValidJudgeName(char* name)
+{
+    int i = 0;
+    while (*(name + i) != '\0')
+    {
+        if ((*(name + i) < 'a' || *(name + i) > 'z') && *(name + i) != ' ')
+            return false;
+        i++;
+    }
+    return true;
+}
+
+int getJudgeId(Judge judge)
+{
+    return judge->judge_id;
+}
+
+char* getJudgeName(Judge judge)
+{
+    return judge->judge_name;
+}
+

@@ -24,7 +24,7 @@ struct eurovision_t
 
 };
 
-////////////////////////////// state - map - related functions /////////////////////////////////////////
+////////////////////////////// state - map - related functions ///////////////
 
 //Map State related functions
 static MapDataElement copyStateData(MapDataElement data)
@@ -52,7 +52,7 @@ static void freeJudgeData(MapDataElement data) {
 	judgeDestroy((Judge)data);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 
 Eurovision eurovisionCreate()
 {
@@ -83,19 +83,22 @@ void eurovisionDestroy(Eurovision eurovision)
 	free(eurovision);
 }
 
-EurovisionResult eurovisionAddState(Eurovision eurovision, int stateId, const char* stateName, const char* songName)
+EurovisionResult eurovisionAddState(Eurovision eurovision, int stateId,
+    const char* stateName, const char* songName)
 {
 	if (eurovision == NULL || stateName == NULL || songName == NULL)
 		return EUROVISION_NULL_ARGUMENT;
 	if (isValidId(stateId) != EUROVISION_SUCCESS)
 		return EUROVISION_INVALID_ID;
-	if (isValidName(stateName) != EUROVISION_SUCCESS || isValidName(songName) != EUROVISION_SUCCESS)
+	if (isValidName(stateName) != EUROVISION_SUCCESS || 
+        isValidName(songName) != EUROVISION_SUCCESS)
 		return EUROVISION_INVALID_NAME;
 	if (mapGet(eurovision->states, &stateId) != NULL)
 		return EUROVISION_STATE_ALREADY_EXIST;
 	
 	State newState = stateCreate(stateId, stateName, songName);
-	MapResult mapResult = mapPut(eurovision->states, &stateId, newState);
+	MapResult mapResult = mapPut(eurovision->states, 
+                       &stateId, newState);
 	stateDestroy(newState);
 
 	if (mapResult != MAP_SUCCESS)
@@ -152,7 +155,9 @@ EurovisionResult eurovisionRemoveState(Eurovision eurovision, int stateId)
 {
 	if (eurovision == NULL) return EUROVISION_NULL_ARGUMENT;
 	if (stateId < 0) return EUROVISION_INVALID_ID;
-	if(mapGet(eurovision->states, &stateId) == NULL) return EUROVISION_STATE_NOT_EXIST;
+
+	if(mapContains(eurovision->states, &stateId)==false)
+        return EUROVISION_STATE_NOT_EXIST;
 	
 	MapKeyElement stateIterator = mapGetFirst(eurovision->states);
 	MapResult temp_result;
@@ -161,9 +166,9 @@ EurovisionResult eurovisionRemoveState(Eurovision eurovision, int stateId)
 	{
 		State curState = mapGet(eurovision->states, stateIterator);
 
-		//removes the state at votesGiven MAP ! and checks that everything is good
+	//removes the state at votesGiven MAP ! and checks that everything is good
 		temp_result = mapRemove(getVotesGiven(curState), &stateId);
-		if (temp_result != MAP_SUCCESS && temp_result != MAP_ITEM_DOES_NOT_EXIST)
+		if(temp_result != MAP_SUCCESS && temp_result != MAP_ITEM_DOES_NOT_EXIST)
 			return EUROVISION_INVALID_ID;//any error
 
 		stateIterator = mapGetNext(eurovision->states);
@@ -174,7 +179,7 @@ EurovisionResult eurovisionRemoveState(Eurovision eurovision, int stateId)
 	{
 		State curState = mapGet(eurovision->states, stateIterator);
 		temp_result = mapRemove(getPointsReceived(curState), &stateId);
-		if (temp_result != MAP_SUCCESS && temp_result != MAP_ITEM_DOES_NOT_EXIST)
+		if(temp_result != MAP_SUCCESS && temp_result != MAP_ITEM_DOES_NOT_EXIST)
 			return EUROVISION_INVALID_ID;
 
 		stateIterator = mapGetNext(eurovision->states);
@@ -185,11 +190,12 @@ EurovisionResult eurovisionRemoveState(Eurovision eurovision, int stateId)
 	{
 		Judge judge = mapGet(eurovision->judges, judgeIterator);
 		int *votes = getJudgeVotes(judge);
-		for (int i = 0; i < VotesNum; ++i)
+		for (int i = 0; i < VOTESNUM; ++i)
 		{
 			if (votes[i] == stateId)
 			{
-				judgeDestroy(judge);
+                int idToRemove = getJudgeId(judge);
+                mapRemove(eurovision->judges, &idToRemove);
 				break;
 			}
 		}
@@ -200,7 +206,7 @@ EurovisionResult eurovisionRemoveState(Eurovision eurovision, int stateId)
 
 	return EUROVISION_SUCCESS;
 }
-/////////////////////// Eurovision Judges ///////////////////////////////////////////////////////////////
+/////////////////////// Eurovision Judges //////////////////////////////////
 
 EurovisionResult eurovisionAddJudge(Eurovision eurovision, int judgeId,
 	const char* judgeName, int *judgeResults) {
@@ -210,26 +216,24 @@ EurovisionResult eurovisionAddJudge(Eurovision eurovision, int judgeId,
 
 	//check judgeId validity
 	if (judgeId < 0) return EUROVISION_INVALID_ID;
-	for (int i = 0; i < VotesNum; ++i) {
-		if (judgeResults[i] < 0) return EUROVISION_INVALID_ID;
-	}
 
 	//check if judgeId is already exist
 	if (mapContains(eurovision->judges, &judgeId)) {
 		return EUROVISION_JUDGE_ALREADY_EXIST;
 	}
 
-	//check if all the states in the judgeResults are exist
-	//and if the judge didn't vote more hen once for the same state
+	//check if all the states in the judgeResults exist
+	//and if the judge didn't vote more than once for the same state
 	//and if the states id are valid
-	for (int i = 0; i < VotesNum; ++i) {
+	for (int i = 0; i < VOTESNUM; ++i) 
+    {
+        if (judgeResults[i] < 0) return EUROVISION_INVALID_ID;
+
 		if (!mapContains(eurovision->states, &judgeResults[i])) {
 			return EUROVISION_STATE_NOT_EXIST;
 		}
 
-		if (judgeResults[i] < 0) return EUROVISION_INVALID_ID;
-
-		for (int j=0; j<VotesNum; ++j){
+		for (int j=0; j<VOTESNUM; ++j){
 		    if ((judgeResults[i] == judgeResults[j]) && (i != j)){
 		        return EUROVISION_INVALID_ID;
 		    }
@@ -237,12 +241,7 @@ EurovisionResult eurovisionAddJudge(Eurovision eurovision, int judgeId,
 	}
 
 	//check judgeName validity
-	int i = 0;
-	while (*(judgeName + i) != '\0') {
-		if ((*(judgeName + i) < 'a' || *(judgeName + i) > 'z' ) && *(judgeName + i) != ' ')
-			return EUROVISION_INVALID_NAME;
-		i++;
-	}
+    if(!isValidJudgeName(judgeName)) return EUROVISION_INVALID_NAME;
 
 	Judge newJudge = judgeCreate(judgeId, judgeName, judgeResults);
 	if (newJudge == NULL)
@@ -250,7 +249,8 @@ EurovisionResult eurovisionAddJudge(Eurovision eurovision, int judgeId,
 		eurovisionDestroy(eurovision);
 		return EUROVISION_OUT_OF_MEMORY;
 	}
-	MapResult status = mapPut(eurovision->judges, &judgeId, newJudge);
+	MapResult status = mapPut(eurovision->judges, &judgeId,
+                                                  newJudge);
 	judgeDestroy(newJudge);
 	if(status == MAP_OUT_OF_MEMORY)
 	{
@@ -267,7 +267,7 @@ EurovisionResult eurovisionRemoveJudge(Eurovision eurovision, int judgeId) {
 	Judge judge = mapGet(eurovision->judges, &judgeId);
 	if (judge == NULL) return EUROVISION_JUDGE_NOT_EXIST;
 	int *judgeResults = getJudgeVotes(judge);
-	for (int i = 0; i < VotesNum; ++i) {
+	for (int i = 0; i < VOTESNUM; ++i) {
 		if (judgeResults[i] < 0) {
 			return EUROVISION_INVALID_ID;
 		};
@@ -318,6 +318,14 @@ static int getPointsFromState(Eurovision eurovision, State givingState, MapKeyEl
 	return getPointsFromRank(rank);
 }
 
+//sets the points given by the giving state in the pointsReceived map of the curState
+static MapResult setPointsReceivedStateToState (State curState,
+								 State givingState, int points)
+{
+	int givingIdPtr = getStateId(givingState);
+	Map pointsRecieved = getPointsReceived(curState);
+	return mapPut(pointsRecieved, &givingIdPtr, &points);
+}
 
 
 static MapResult setPointsReceivedState(Eurovision eurovision, State state)
@@ -384,24 +392,22 @@ static double getAvgPointsReceived(State state)
 //gets the avg points for a state from all the judges
 static double getAvgPointsJudge(Eurovision eurovision, State state)
 {
-	MapKeyElement judgeIterator = mapGetFirst(eurovision->judges);
 	int count = 0, sum = 0;
-	while(judgeIterator != NULL)
-	{
-		Judge curJudge = mapGet(eurovision->judges, judgeIterator);
-		int* votes = getJudgeVotes(curJudge);
-		for (int i = 0; i < VotesNum; ++i)
-		{
-			if(votes[i] == getStateId(state))
-			{
-				sum += getPointsFromRank(i);
-				break;
-			}
-		}
-		count++;
-		judgeIterator = mapGetNext(eurovision->judges);
-	}
-
+    MAP_FOREACH(MapKeyElement,judgeIterator,eurovision->judges)
+    {
+        Judge curJudge = mapGet(eurovision->judges, judgeIterator);
+        int* votes = getJudgeVotes(curJudge);
+        for (int i = 0; i < VOTESNUM; ++i)
+        {
+            if (*(votes+i) == getStateId(state))
+            {
+                sum += getPointsFromRank(i);
+                break;
+            }
+        }
+        count++;
+        
+    }
 	return (count == 0) ? 0 : (sum / (double) count);
 }
 
@@ -412,7 +418,7 @@ static List getResultList(Eurovision eurovision,Map map)
 	while(mapGetSize(map) > 0)
 	{
 		int maxStateId = -1;
-		double curPoints, maxPoints = -1;
+		double curPoints=0, maxPoints = -1;
 		MAP_FOREACH(MapKeyElement, curId, map)
 		{
 			curPoints = *(double*)mapGet(map, curId);
@@ -422,7 +428,11 @@ static List getResultList(Eurovision eurovision,Map map)
 				maxStateId = *((int*)curId);
 			}
 		}
+        
 		State topState = mapGet(eurovision->states, &maxStateId);
+        //TOdo: remove when done testing
+        printf("\n %s --> %lf", getStateName(topState), maxPoints);
+        //end
 		listInsertLast(resultList, getStateName(topState));
 		mapRemove(map, &maxStateId);
 	}
