@@ -321,7 +321,7 @@ bool testRunAudienceFavorite() {
 bool testRunGetFriendlyStates() {
   Eurovision eurovision = setupEurovision();
   setupEurovisionStates(eurovision);
-  /* setupEurovisionJudges(eurovision); */
+   /*setupEurovisionJudges(eurovision); */
   setupEurovisionVotes2(eurovision);
 
   List friendlies = eurovisionRunGetFriendlyStates(eurovision);

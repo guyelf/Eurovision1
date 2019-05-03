@@ -82,10 +82,10 @@ Map getPointsReceived(State state)
 	return state->points_recieved;
 }
 
-int* getStateIdPtr(State state)
+int getStateId(State state)
  {
 	if (state == NULL) return NULL;
-	return &state->state_id;
+	return state->state_id;
  }
 char * getStateName(State state)
  {
@@ -121,7 +121,7 @@ void updateVotesGiven(State state, int receiverId,removeOrAddVote flag)
 		mapPut(state->votes_given, &receiverId, &first_vote);
 		return;
 	}
-
+	
 	//do nothing if the giving state didn't vote for the receiving state 
 	if (flag == REMOVE_VOTE && (*votes) == 0)
 		return;

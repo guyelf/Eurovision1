@@ -12,6 +12,10 @@
 #define FIRST 0
 #define INIT_SIZE 10
 #define MAX_POINT 12
+//adding 4 more bytes (only used in concatenating strings for friendlyStates)
+//based on the requires expected to see in the format of the strings
+#define FORMAT 4
+#define FORMAT_STR " - "
 
 struct eurovision_t
 {
@@ -320,13 +324,24 @@ static MapResult setPointsReceivedState(Eurovision eurovision, State state)
 {
 	//inner function
 	assert(eurovision != NULL && state != NULL);
+	int stateId = getStateId(state);
+	MapKeyElement stateIdPtr = &stateId;
 
-	MapKeyElement stateIdPtr = getStateIdPtr(state);
-	
+	//Todo remove when done testing:
+	int count = 0, idNum = 0;
+	//todo://///////////////////////
 	MAP_FOREACH(MapKeyElement,stateIterator,eurovision->states)
 	{
 		State curState = mapGet(eurovision->states, stateIterator);
 		int points = getPointsFromState(eurovision, curState, stateIdPtr);
+		//todo: remove when done testing
+		char* curS = getStateName(state);
+		char* givS = getStateName(curState);
+		printf("%d. %s gave--> %s %d points\n total %d\n", idNum, givS, curS,points,count);
+		idNum++;
+		count++;
+		if (idNum == 16) idNum = 0;
+		//todo://///////////////////////////////////////////////////////////////////////////
 		MapResult status = setPointsReceivedStateToState(state, curState, points);
 
 		if (status != MAP_SUCCESS)
@@ -351,7 +366,7 @@ static MapResult setPointsReceived(Eurovision eurovision)
 		MapResult status = setPointsReceivedState(eurovision, curState);
 		if (status != MAP_SUCCESS)
 			return status;
-
+		//to get back the right iterator -that's a nested foreach of the same iterator type
 		MAP_FOREACH(MapKeyElement, deepIter, eurovision->states)
 		{
 			if (*(int*)deepIter == *(int*)stateIterator) break;
@@ -387,7 +402,7 @@ static double getAvgPointsJudge(Eurovision eurovision, State state)
 		int* votes = getJudgeVotes(curJudge);
 		for (int i = 0; i < VotesNum; ++i)
 		{
-			if(votes[i] == *(getStateIdPtr(state)))
+			if(votes[i] == getStateId(state))
 			{
 				sum += getPointsFromRank(i);
 				break;
@@ -456,78 +471,127 @@ List eurovisionRunAudienceFavorite(Eurovision eurovision)
 /////////////////////////////////// FRIENDLY ///////////////////////////////////
 
 //get id of potential friendly state who received 12 points from current state
-static int getMaxVotedStateId(Map map){
-	int max_voted_state_id = -1, MaxVotes=0;
-	MAP_FOREACH(int *, i, map){
-		int cur_state_votes = *(int *) mapGet(map, i);
-		if (max_voted_state_id==-1 || cur_state_votes > MaxVotes){
-			max_voted_state_id = *i;
-			MaxVotes= cur_state_votes;
+//gets the votesGiven map
+//returns the stateId with the maximal votes (12 points) 
+//ERRORS: returns -1, there's an error with the votesGiven of the state
+static int getMaxVotedStateId(Map votes){
+	int maxVotedStateId = -1;
+	int MaxVotes = 0;//maxVotes has to be bigger than 0 in order to count
+	MAP_FOREACH(MapKeyElement, i, votes)
+	{
+		if (mapContains(votes, i) == false)
+			continue;
+
+		int curStateVotes = *((int *) mapGet(votes, i));
+		if (curStateVotes > MaxVotes){
+			maxVotedStateId = *((int *)i);
+			MaxVotes= curStateVotes;
 		}
 	}
-	return max_voted_state_id;
+	return maxVotedStateId;
 }
 
 //get a concat string of the two friendly states
-static char* getConcatStatesName (Map mapStates, int state_1_id, int state_2_id){
-	State state_1 = mapGet(mapStates, &state_1_id);
-	State state_2 = mapGet(mapStates, &state_2_id);
+static char* getConcatStatesName (Map states, int stateId1, int stateId2){
+	
+	State state1 = mapGet(states, &stateId1);
+	State state2 = mapGet(states, &stateId2);
+	if (state1 == NULL || state2 == NULL) return NULL;
 
-	char* state_1_name = getStateName(state_1);
-	char* state_2_name = getStateName(state_2);
-	char* new_friendly_states= malloc(strlen(state_1_name)+strlen(state_2_name)+4);
-	if (new_friendly_states == NULL) return NULL;
-	if (strcmp(state_1_name, state_2_name) <= 0){
-		new_friendly_states = strcat(state_1_name, " - ");
-		return (strcat(new_friendly_states, state_2_name));
+	char* name1 = getStateName(state1);
+	char* name2 = getStateName(state2);
+	char* friendlyStates= malloc(strlen(name1)+strlen(name2)+ FORMAT);
+	
+	if (friendlyStates == NULL) return NULL;
+
+	if (strcmp(name1, name2) <= 0)
+	{
+		strcpy(friendlyStates, name1);//init newFriendlyStates with state1
+		friendlyStates = strcat(friendlyStates, FORMAT_STR);// adds " - "
+		return strcat(friendlyStates, name2);// adds state2
 	}
-	else{
-		new_friendly_states = strcat(state_2_name, " - ");
-		return (strcat(new_friendly_states, state_1_name));
+	else
+	{
+		strcpy(friendlyStates, name2);
+		friendlyStates = strcat(friendlyStates, FORMAT_STR);
+		return strcat(friendlyStates, name1);
 	}
 }
 
 List eurovisionRunGetFriendlyStates(Eurovision eurovision){
 	if (eurovision == NULL) return NULL;
 	List friendly_states = listCreate((CopyListElement) copyString,(FreeListElement) free);
-	if(friendly_states==NULL){
+
+	if(friendly_states==NULL)
+	{
         eurovisionDestroy(eurovision);
 	    return NULL;
 	}
-    //pointsReceived is not initialized until the contest runs
-	State firstState = mapGetFirst(eurovision->states);
-	if (firstState == NULL) return NULL;
 
-    if(mapGetSize(getPointsReceived(firstState)) == 0){
-		//if not set, sets the pointsReceived
-        eurovisionRunAudienceFavorite(eurovision);
+	MapKeyElement firstKey = mapGetFirst(eurovision->states);
+	if (firstKey == NULL || !mapContains(eurovision->states,firstKey)) 
+	{
+		listDestroy(friendly_states);
+		return NULL;
+	}
+
+	//check if needs to init pointsReceived Map
+	State firstState = mapGet(eurovision->states, firstKey);
+	Map pointsReceived1 = getPointsReceived(firstState);
+	int mapPointsSize = mapGetSize(pointsReceived1);
+	int statesNum = mapGetSize(eurovision->states);
+    if(mapPointsSize <= 0 || mapPointsSize > statesNum)
+	{
+        setPointsReceived(eurovision);
     }
+	//end check
 
-	MAP_FOREACH(int *, i, eurovision->states){
-		State cur_state = mapGet(eurovision->states, i);
-		Map cur_state_votes_given = getVotesGiven(cur_state);
-		Map cur_state_points_received = getPointsReceived(cur_state);
+	//todo: remove when done testing
+	MAP_FOREACH(MapKeyElement,pointsIterator, pointsReceived1)
+    {
+		int p = *((int*)mapGet(pointsReceived1, pointsIterator));
+		char* givS = getStateName(mapGet(eurovision->states, pointsIterator));
+		printf("%s gave--> israel %d points\n", givS, p);
+    }
+	//todo till here
 
-        // the state that will get 12 points from cur_state
-		int max_voted_state_id = getMaxVotedStateId(cur_state_votes_given);
+	MAP_FOREACH(MapKeyElement, i, eurovision->states)
+	{
+		State curState = mapGet(eurovision->states, i);
+		Map curVotesGiven = getVotesGiven(curState);
+		Map curPointsReceived = getPointsReceived(curState);
 
-		//from the state that was max_voted
-		int points_received = *(int*) mapGet(cur_state_points_received, &max_voted_state_id);
-		if (points_received == MAX_POINT && max_voted_state_id > *i){
-            char *name = getConcatStatesName(eurovision->states, *i,
-                                             max_voted_state_id);
+        // the state that will get 12 points from curState
+		int maxVotedStateId = getMaxVotedStateId(curVotesGiven);
+		//if it doesn't have a valid votesGiven map (no votes were given)
+		if(maxVotedStateId == -1)
+		{
+			continue;
+		}
+		//now checking if the points the current state got from the state
+		//she nominated for 12 points is also 12 points
+		int pointsReceived = *(int*) mapGet(curPointsReceived, &maxVotedStateId);
+		if (pointsReceived == MAX_POINT && (maxVotedStateId > *(int*)i))
+		{
+            char *name = getConcatStatesName(eurovision->states,
+											*(int*)i,
+                                            maxVotedStateId);
             if (name == NULL){
-                eurovisionDestroy(eurovision);
-                return NULL;
+				eurovisionDestroy(eurovision);
+				listDestroy(friendly_states);
+				return NULL;
             }
+			//sends a copy
             listInsertLast(friendly_states, name);
+			free(name);
 		}
 	}
 
-    if (listSort(friendly_states, (CompareListElements) strcmp) != LIST_SUCCESS){
-       eurovisionDestroy(eurovision);
-       return NULL;
+    if (listSort(friendly_states, (CompareListElements) strcmp) != LIST_SUCCESS)
+	{
+		eurovisionDestroy(eurovision);
+		listDestroy(friendly_states);
+		return NULL;
     }
-
 	return friendly_states;
 }

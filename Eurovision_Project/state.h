@@ -45,7 +45,7 @@ Map getVotesGiven(State state);
 Map getPointsReceived(State state);
 
 //gets the stateId of the given state
-int* getStateIdPtr(State state);
+int getStateId(State state);
 
 //returns the sizeof state
 int getSizeofState();
