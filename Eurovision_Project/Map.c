@@ -179,13 +179,17 @@ Map mapCreate(copyMapDataElements copyDataElement,
 void mapDestroy(Map map) {
 	if (map == NULL) {
 		return;
-	}
-	if (mapGetSize(map) > 0) {
-		mapClear(map);
-	}
+
+	} else if (map->head == NULL){
+        free(map);
+        return;
+
+    } else if (mapGetSize(map) > 0) {
+            mapClear(map);
+    } 
 	free(map->head);
-	//not freeing the map->iterator bc it's just a ptr(doesn't take any space)
 	free(map);
+    //not freeing the map->iterator bc it's just a ptr(doesn't take any space)
 }
 
 

@@ -118,6 +118,7 @@ EurovisionResult isValidName(const char* name)
 	 return EUROVISION_SUCCESS;
  }
 ////////////////////////////////////////////////
+
 void updateVotesGiven(State state, int receiverId, removeOrAddVote flag)
 {
     if (state == NULL) return;

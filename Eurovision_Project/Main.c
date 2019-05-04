@@ -229,7 +229,7 @@ bool testAudienceScores() {
         printf("Testing deleting votes that don't exist: ");
         testIdOrder(eurovision);
         for (int i=0; i<10; i++) {
-            eurovisionRemoveVote(eurovision, i, (i+1)%10);
+            eurovisionRemoveVote(eurovision, i, (i + 1) % 10);
         }
         printf("Testing after delete all votes: ");
         testIdOrder(eurovision);
@@ -316,11 +316,10 @@ bool testEmptyRun() {
 }
 
 int main() {
-    testRemoveStateAndJudges(); 
+    //testRemoveStateAndJudges(); 
     //testJudgesScores();
-    testAudienceScores(); 
-    testFriendly();
-    testEmptyRun();
+    testAudienceScores();
+    //testEmptyRun();
     return 0;
 }
 

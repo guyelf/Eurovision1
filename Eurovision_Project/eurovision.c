@@ -152,9 +152,12 @@ EurovisionResult eurovisionRemoveVote(Eurovision eurovision,
                                                     stateTaker);
 	if (result != EUROVISION_SUCCESS) return result;
 
-	State givingState = mapGet(eurovision->states, &stateGiver);
+    //todo: uncomment after done testing
+	State givingState = mapGet(eurovision->states, &stateGiver); 
 	updateVotesGiven(givingState, stateTaker, REMOVE_VOTE);
-
+    //State takingState = mapGet(eurovision->states, &stateTaker);
+    //updateVotesGiven(takingState, stateGiver, REMOVE_VOTE);
+    //todo: end of section to replace
 	return EUROVISION_SUCCESS;
 }
 
@@ -464,11 +467,13 @@ List eurovisionRunContest(Eurovision eurovision, int audiencePercent)
 	{
 		State curState= mapGet(eurovision->states, stateId);
 
-        //broke lines to fit 80 chars limit, quite simple calculation actually
-		double statePoints = ( (double)getAvgPointsReceived(curState) * 
-                               ((double)audiencePercent / 100) ) +
-			( (double)getAvgPointsJudge(eurovision, curState) *
-              ((100 - (double)audiencePercent) / 100) );
+        double avgPointsRec = (double)getAvgPointsReceived(curState)*
+                              ((double)audiencePercent / 100);
+
+        double avgJudgePoints = (double)getAvgPointsJudge(eurovision, curState)*
+            ((double)(100 - audiencePercent) / 100);
+
+		double statePoints = avgPointsRec+avgJudgePoints;
 
 		mapPut(resultMap, stateId, &statePoints);
 	}
