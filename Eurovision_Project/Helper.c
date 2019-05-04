@@ -16,6 +16,13 @@ int compareInt(MapKeyElement num1, MapKeyElement num2) {
 	return *(int *)num1 - *(int *)num2;
 }
 
+int doubleCompare(double num1, double num2) {
+    double diff = num1 - num2;
+    if (diff > EPSILON) return 1;
+    if (diff < -EPSILON) return -1;
+    return 0;
+}
+
  MapKeyElement copyDouble(MapKeyElement element) {
 	double *newDouble = malloc(sizeof(double));
 	if (newDouble == NULL) return NULL;

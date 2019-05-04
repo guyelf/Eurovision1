@@ -169,19 +169,19 @@ static MapResult setPointsReceived(Eurovision eurovision)
     return MAP_SUCCESS;
 }
 
-//MAP_Foreaching through all the states and checks if their PR map size is ok
-static bool isPointsReceivedValid(Eurovision eurovision)
-{
-    int statesNum = mapGetSize(eurovision->states);
-    MAP_FOREACH(MapKeyElement, stateIter, eurovision->states)
-    {
-        State state = mapGet(eurovision->states, stateIter);
-        Map pr = getPointsReceived(state);
-        int mapPointsSize = mapGetSize(pr);
-        if (statesNum != mapPointsSize) return false;
-    }
-    return true;
-}
+////MAP_Foreaching through all the states and checks if their PR map size is ok
+//static bool isPointsReceivedValid(Eurovision eurovision)
+//{
+//    int statesNum = mapGetSize(eurovision->states);
+//    MAP_FOREACH(MapKeyElement, stateIter, eurovision->states)
+//    {
+//        State state = mapGet(eurovision->states, stateIter);
+//        Map pr = getPointsReceived(state);
+//        int mapPointsSize = mapGetSize(pr);
+//        if (statesNum != mapPointsSize) return false;
+//    }
+//    return true;
+//}
 ///////////////////////////////// end PR related functions /////////
 
 // Gets avg points for a state based on the votes of the other states
@@ -239,7 +239,8 @@ static List getResultList(Eurovision eurovision, Map map)
         MAP_FOREACH(MapKeyElement, curId, map)
         {
             double curPoints = *(double*)mapGet(map, curId);
-            if (curPoints > maxPoints)
+
+            if(doubleCompare(maxPoints,curPoints) < 0)
             {
                 maxPoints = curPoints;
                 maxStateId = *((int*)curId);
