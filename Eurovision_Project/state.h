@@ -47,9 +47,6 @@ Map getPointsReceived(State state);
 //gets the stateId of the given state
 int getStateId(State state);
 
-//returns the sizeof state
-int getSizeofState();
-
 //gets a state, returns the state name
 char * getStateName(State state);
 

@@ -14,7 +14,7 @@ int* getJudgeVotes(Judge judge);
 
 //gets an id,name, and array of votes
 //returns a new judge with the assigned data
-Judge judgeCreate(int judge_id,const char* judge_name, int* judge_votes);
+Judge judgeCreate(int judgeId,const char* judgeName, int* judgeVotes);
 
 //gets a judge
 //removes it completely

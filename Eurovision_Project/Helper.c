@@ -1,24 +1,25 @@
 #include "helper.h"
 
 //compare/copy/free functions for map 
-MapKeyElement copyInt(MapKeyElement e) {
+MapKeyElement copyInt(MapKeyElement element) {
 	int *newInt = malloc(sizeof(int));
 	if (newInt == NULL) return NULL;
-	*newInt = *(int *)e;
+	*newInt = *(int *)element;
 	return newInt;
 }
 
-void freeInt(MapKeyElement e) {
-	free(e);
+void freeInt(MapKeyElement element) {
+	free(element);
 }
 
-int compareInt(MapKeyElement a, MapKeyElement b) {
-	return *(int *)a - *(int *)b;
+int compareInt(MapKeyElement num1, MapKeyElement num2) {
+	return *(int *)num1 - *(int *)num2;
 }
- MapKeyElement copyDouble(MapKeyElement e) {
+
+ MapKeyElement copyDouble(MapKeyElement element) {
 	double *newDouble = malloc(sizeof(double));
 	if (newDouble == NULL) return NULL;
-	*newDouble = *(double *)e;
+	*newDouble = *(double *)element;
 	return newDouble;
 }
 ListElement copyString(ListElement str)
@@ -32,4 +33,4 @@ void freeString(ListElement str)
 {
 	free(str);
 }
-///////////////
+/////////////////////////////////////////////////

@@ -14,13 +14,13 @@ ListElement copyString(ListElement str);
 //function for listCreate to free the string's ptrs
 void freeString(ListElement str);
 
-MapKeyElement copyDouble(MapKeyElement e);
+MapKeyElement copyDouble(MapKeyElement element);
 
-int compareInt(MapKeyElement a, MapKeyElement b);
+int compareInt(MapKeyElement num1, MapKeyElement num2);
 
-void freeInt(MapKeyElement e);
+void freeInt(MapKeyElement element);
 
-MapKeyElement copyInt(MapKeyElement e);
+MapKeyElement copyInt(MapKeyElement element);
 
 
 #endif //HELPER_H_

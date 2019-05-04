@@ -5,9 +5,9 @@
 #include "judge.h"
 
 struct judge_t {
-	int judge_id;
-	char* judge_name;
-	int* judge_votes;
+	int judgeId;
+	char* judgeName;
+	int* judgeVotes;
 };
 
 int getJudgeSize()
@@ -18,46 +18,45 @@ int getJudgeSize()
 //returns the same pointer to the judgeVotes array
 int* getJudgeVotes(Judge judge)
 {
-	return judge->judge_votes;
+	return judge->judgeVotes;
 }
 
-Judge judgeCreate(int judge_id,const char* judge_name, int* judge_votes) {
-	if (judge_name == NULL || judge_votes == NULL) {
+Judge judgeCreate(int judgeId,const char* judgeName, int* judgeVotes) {
+	if (judgeName == NULL || judgeVotes == NULL) {
 		return NULL;
 	}
 
-	Judge new_judge = malloc(sizeof(*new_judge));
-	char* name_ptr = malloc(strlen(judge_name) + 1);
-	int* votes_ptr = calloc(VOTESNUM, sizeof(int));
-	if(name_ptr == NULL || votes_ptr == NULL || new_judge == NULL)
+	Judge newJudge = malloc(sizeof(*newJudge));
+	char* namePtr = malloc(strlen(judgeName) + 1);
+	int* votesPtr = calloc(VOTESNUM, sizeof(int));
+	if(namePtr == NULL || votesPtr == NULL || newJudge == NULL)
 	{
-		free(new_judge);
-		free(name_ptr);
-		free(votes_ptr);
+		free(newJudge);
+		free(namePtr);
+		free(votesPtr);
 		return NULL;
 	}
+	newJudge->judgeId = judgeId;
+	newJudge->judgeName = strcpy(namePtr, judgeName);
+	newJudge->judgeVotes = memcpy(votesPtr,judgeVotes,(sizeof(int)*VOTESNUM));
 
-	//TODO: find a way to check if memcpy & strcpy fail w/o code duplication
-	new_judge->judge_id = judge_id;
-	new_judge->judge_name = strcpy(name_ptr, judge_name);
-	new_judge->judge_votes = memcpy(votes_ptr,judge_votes,(sizeof(int)*VOTESNUM));
-
-	return new_judge;
+	return newJudge;
 }
 
 void judgeDestroy(Judge judge) {
 	if (judge == NULL) return;
 
-	free(judge->judge_name);
-	free(judge->judge_votes);
+	free(judge->judgeName);
+	free(judge->judgeVotes);
 	free(judge);
 }
 
 Judge judgeCopy(Judge judge) {
 	if (judge == NULL) return NULL;
-	Judge new_judge = judgeCreate(judge->judge_id, judge->judge_name, judge->judge_votes);
-	if (new_judge == NULL) return NULL;
-	return new_judge;
+	Judge newJudge = judgeCreate(judge->judgeId, judge->judgeName,
+                                 judge->judgeVotes);
+	if (newJudge == NULL) return NULL;
+	return newJudge;
 }
 
 bool isValidJudgeName(char* name)
@@ -74,11 +73,11 @@ bool isValidJudgeName(char* name)
 
 int getJudgeId(Judge judge)
 {
-    return judge->judge_id;
+    return judge->judgeId;
 }
 
 char* getJudgeName(Judge judge)
 {
-    return judge->judge_name;
+    return judge->judgeName;
 }
 
