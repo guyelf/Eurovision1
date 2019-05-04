@@ -25,7 +25,7 @@ void judgeDestroy(Judge judge);
 Judge judgeCopy(Judge judge);
 
 //checks if the given name for the judge is valid
-bool isValidJudgeName(char* name);
+bool isValidJudgeName(const char* name);
 
 //return the id associated with the given judge
 int getJudgeId(Judge judge);

@@ -1,0 +1,3 @@
+C:/Users/Guy El/source/repos/Eurovision_Project/Eurovision_Project/cmake-build-debug/CMakeFiles/ex1_v3.dir
+C:/Users/Guy El/source/repos/Eurovision_Project/Eurovision_Project/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Guy El/source/repos/Eurovision_Project/Eurovision_Project/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,24 @@
+"C:\Users\Guy El\AppData\Roaming\JetBrains\CLion 2018.2.5\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - NMake Makefiles" "C:\Users\Guy El\source\repos\Eurovision_Project\Eurovision_Project"
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Users/Guy El/source/repos/Eurovision_Project/Eurovision_Project/cmake-build-debug
+
+Cannot get compiler information:
+	Compiler exited with error code 2: "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\Hostx86\x86\cl.exe" @C:\Users\GUYEL~1\AppData\Local\Temp\response-file C:\Users\GUYEL~1\AppData\Local\Temp\compiler-file | @response-file=/TC "-IC:\Users\GUYEL~1\source\repos\EUROVI~3\EUROVI~1\." "-IC:\Users\GUYEL~1\source\repos\EUROVI~3\EUROVI~1\tests" -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG /MDd /Zi /Ob0 /Od /RTC1 /Be /Bd /EP
+	Microsoft (R) C/C++ Optimizing Compiler Version 19.16.27025.1 for x86
+	Copyright (C) Microsoft Corporation.  All rights reserved.
+	
+	all:
+		@cd C:\Users\Guy El\source\repos\Eurovision_Project\Eurovision_Project\cmake-build-debug
+		@set INCLUDE=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include;C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um;C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\ucrt;C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\shared;C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\um;C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\winrt;C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\cppwinrt
+		@set LIB=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\lib\x86;C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\lib\x86;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\lib\um\x86;C:\Program Files (x86)\Windows Kits\10\lib\10.0.17763.0\ucrt\x86;C:\Program Files (x86)\Windows Kits\10\lib\10.0.17763.0\um\x86;
+		@set CL=
+		@set _CL_=
+		@set LINK=
+		C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\bin\Hostx86\x86\cl.exe @<< C:\Users\GUYEL~1\AppData\Local\Temp\compiler-file
+	/TC "-IC:\Users\GUYEL~1\source\repos\EUROVI~3\EUROVI~1\." "-IC:\Users\GUYEL~1\source\repos\EUROVI~3\EUROVI~1\tests" -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG /MDd /Zi /Ob0 /Od /RTC1 /Be /Bd /EP<<
+	
+	cl /TC "-IC:\Users\GUYEL~1\source\repos\EUROVI~3\EUROVI~1\." "-IC:\Users\GUYEL~1\source\repos\EUROVI~3\EUROVI~1\tests" -std=c99 -Wall -pedantic-errors -Werror -DNDEBUG /MDd /Zi /Ob0 /Od /RTC1 /Be /Bd /EP
+	cl : Command line error D8021 : invalid numeric argument '/Werror'
+	
+	

@@ -125,15 +125,15 @@ void updateVotesGiven(State state, int receiverId, removeOrAddVote flag)
 
     int* votes = mapGet(state->votesGiven, &receiverId);
 
-    if (votes == NULL) //if receiver state doesn't exist
+    if (votes == NULL && flag == ADD_VOTE) //if receiver state doesn't exist
     {
         int firstVote = 1;
         mapPut(state->votesGiven, &receiverId, &firstVote);
         return;
     }
 
-    //do nothing if the giving state didn't vote for the receiving state 
-    if (flag == REMOVE_VOTE && (*votes) == 0)return;
+    //do nothing if the giving state didn't vote for the receiving state yet
+    if ((votes == NULL)|| (flag == REMOVE_VOTE && (*votes) == 0)) return;
 
     (flag == ADD_VOTE) ? (*votes)++ : (*votes)--; // adding/removing 1 vote 
 }

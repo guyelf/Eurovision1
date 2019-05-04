@@ -12,6 +12,10 @@
   } while (0);
 
 int main(int argc, char *argv[]) {
+
+    /*
+     * SEGEL
+     */
     TEST(testAddState)
     TEST(testRemoveState)
     TEST(testAddJudge)
@@ -21,5 +25,21 @@ int main(int argc, char *argv[]) {
     TEST(testRunContest)
     TEST(testRunAudienceFavorite)
     TEST(testRunGetFriendlyStates)
+
+
+    printf("\n ***************** \n SPECIAL TESTS \n ***************** \n ");
+    TEST(specialTest3_NoVotesNoJudges)
+    TEST(specialTest1_OnlyJudges1)
+    TEST(specialTest2_OnlyJudges2)
+    TEST(specialTest3_NoVotesNoJudges)
+    TEST(specialTest4_addAndRemoveStatesLikeCrazy)
+    TEST(specialTest5_invalidPercent)
+    TEST(specialTest6_NoJudges)
+    TEST(specialTest7_OneStateAndNoState)
+    TEST(specialTest8_VoteLikeMad)
+    TEST(specialTest9_allJudgesAreCrazy)
+    TEST(specialTest10_statesGoingWild)
+    TEST(specialTest11_GiveAndTake)
+    TEST(specialTest12_duasPoua)
     return 0;
 }

@@ -277,6 +277,7 @@ bool testRunContest() {
 
   List ranking = eurovisionRunContest(eurovision, 40);
   CHECK(listGetSize(ranking), 16);
+
   char *current = (char*)listGetFirst(ranking);
   CHECK(strcmp(current, "united kingdom"), 0);
   current = (char*)listGetNext(ranking);
@@ -292,6 +293,8 @@ bool testRunContest() {
   eurovisionDestroy(eurovision);
   return true;
 }
+
+
 
 bool testRunAudienceFavorite() {
   Eurovision eurovision = setupEurovision();
@@ -321,7 +324,7 @@ bool testRunAudienceFavorite() {
 bool testRunGetFriendlyStates() {
   Eurovision eurovision = setupEurovision();
   setupEurovisionStates(eurovision);
-   /*setupEurovisionJudges(eurovision); */
+  /* setupEurovisionJudges(eurovision); */
   setupEurovisionVotes2(eurovision);
 
   List friendlies = eurovisionRunGetFriendlyStates(eurovision);
@@ -332,6 +335,598 @@ bool testRunGetFriendlyStates() {
   current  = (char*)listGetNext(friendlies);
   CHECK(strcmp(current, "moldova - russia"), 0);
 
+  listDestroy(friendlies);
+  eurovisionDestroy(eurovision);
+  return true;
+}
+
+/*
+ * SPECIAL
+ */
+
+/*
+ * 0 percent to citizens.
+ */
+bool specialTest1_OnlyJudges1() {
+    Eurovision eurovision = setupEurovision();
+    setupEurovisionStates(eurovision);
+    setupEurovisionJudges(eurovision);
+    List ranking = eurovisionRunContest(eurovision, 99); //NO VOTES!
+
+    CHECK(listGetSize(ranking), 16);
+
+    // By judges only
+    char *current = (char*)listGetFirst(ranking);
+    CHECK(strcmp(current, "united kingdom"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "moldova"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "cyprus"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "israel"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "russia"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "spain"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "netherlands"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "france"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "malta"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "armenia"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "ireland"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "croatia"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "austria"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "italy"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "sweden"), 0);
+    current = (char*)listGetNext(ranking);
+    CHECK(strcmp(current, "germany"), 0);
+
+    listDestroy(ranking);
+    eurovisionDestroy(eurovision);
+    return true;
+}
+
+/*
+ * No votes at all
+ */
+bool specialTest2_OnlyJudges2() {
+  Eurovision eurovision = setupEurovision();
+  setupEurovisionStates(eurovision);
+  setupEurovisionJudges(eurovision);
+
+  List ranking = eurovisionRunContest(eurovision, 35);
+
+  CHECK(listGetSize(ranking), 16);
+
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "united kingdom"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "moldova"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "cyprus"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "israel"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "russia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "spain"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "netherlands"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "france"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "malta"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "armenia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "ireland"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "croatia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "austria"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "italy"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "sweden"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "germany"), 0);
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+  return true;
+}
+
+/*
+ * No votes or judges, sort by id only
+ */
+bool specialTest3_NoVotesNoJudges() {
+  Eurovision eurovision = setupEurovision();
+  setupEurovisionStates(eurovision);
+  List ranking = eurovisionRunContest(eurovision, 2);
+
+  CHECK(listGetSize(ranking), 16);
+
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "israel"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "malta"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "croatia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "russia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "moldova"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "cyprus"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "spain"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "italy"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "france"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "germany"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "united kingdom"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "armenia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "austria"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "ireland"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "netherlands"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "sweden"), 0);
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+  return true;
+
+}
+
+/*
+ * Check add and remove states.
+ *
+ */
+bool specialTest4_addAndRemoveStatesLikeCrazy() {
+  Eurovision eurovision = setupEurovision();
+  setupEurovisionStates(eurovision);
+
+  for (int i=0; i<7 ; i++) {
+    eurovisionRemoveState(eurovision,i);
+  }
+
+  List ranking = eurovisionRunContest(eurovision, 3);
+  CHECK(listGetSize(ranking), 9);
+  listDestroy(ranking);
+
+  for (int i=0; i<70 ; i++) {
+        eurovisionAddState(eurovision,i+20,"uga chaka","hakuna matata");
+  }
+  ranking = eurovisionRunContest(eurovision, 4);
+  CHECK(listGetSize(ranking), 79);
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+
+  return true;
+
+}
+
+/*
+ * invalid percent in run contest
+ */
+bool specialTest5_invalidPercent() {
+  Eurovision eurovision = setupEurovision();
+  setupEurovisionStates(eurovision);
+  setupEurovisionJudges(eurovision);
+  setupEurovisionVotes(eurovision);
+
+  List ranking1 = eurovisionRunContest(eurovision, -1);
+  CHECK(ranking1, NULL);
+  List ranking2 = eurovisionRunContest(eurovision, 101);
+  CHECK(ranking2, NULL);
+  List ranking3 = eurovisionRunContest(eurovision, 0);
+  CHECK(ranking3, NULL);
+
+  listDestroy(ranking1);
+  listDestroy(ranking2);
+  listDestroy(ranking3);
+  eurovisionDestroy(eurovision);
+
+  return true;
+
+}
+
+/*
+ * No judges.
+ */
+bool specialTest6_NoJudges() {
+  Eurovision eurovision = setupEurovision();
+  setupEurovisionStates(eurovision);
+  giveVotes(eurovision,0,1,150);
+
+  for (int i=0;i<100;i++) {
+    eurovisionRemoveVote(eurovision,4,5);
+  }
+
+  giveVotes(eurovision,1,2,100);
+  for (int i=0;i<100;i++) {
+    eurovisionRemoveVote(eurovision,1,2);
+  }
+  List ranking = eurovisionRunContest(eurovision, 50);
+
+  CHECK(listGetSize(ranking), 16);
+
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "malta"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "israel"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "croatia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "russia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "moldova"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "cyprus"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "spain"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "italy"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "france"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "germany"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "united kingdom"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "armenia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "austria"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "ireland"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "netherlands"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "sweden"), 0);
+
+  listDestroy(ranking);
+
+  eurovisionDestroy(eurovision);
+
+  return true;
+
+}
+/*
+ * checks what happen with 0/1 state.
+ */
+bool specialTest7_OneStateAndNoState() {
+  Eurovision eurovision = setupEurovision();
+  eurovisionAddState(eurovision,0,"kiryat ata","hakuna matata");
+
+  List ranking = eurovisionRunContest(eurovision, 50);
+
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "kiryat ata"), 0);
+  listDestroy(ranking);
+
+  eurovisionRemoveState(eurovision,0);
+  ranking = eurovisionRunContest(eurovision, 50);
+  CHECK(listGetSize(ranking),0);
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+
+  return true;
+
+}
+
+/*
+ * checks return order of votes.
+ */
+bool specialTest8_VoteLikeMad() {
+  Eurovision eurovision = setupEurovision();
+  setupEurovisionStates(eurovision);
+
+  CHECK(eurovisionAddVote(eurovision,0,0), EUROVISION_SAME_STATE);
+  CHECK(eurovisionAddVote(eurovision,-20,20), EUROVISION_INVALID_ID);
+  CHECK(eurovisionAddVote(eurovision,20,20), EUROVISION_STATE_NOT_EXIST);
+  CHECK(eurovisionAddVote(eurovision,20,0), EUROVISION_STATE_NOT_EXIST);
+  CHECK(eurovisionAddVote(eurovision,-20,0), EUROVISION_INVALID_ID);
+  CHECK(eurovisionAddVote(eurovision,1,-20), EUROVISION_INVALID_ID);
+  eurovisionRemoveState(eurovision,0);
+  CHECK(eurovisionAddVote(eurovision,0,3), EUROVISION_STATE_NOT_EXIST);
+  CHECK(eurovisionAddVote(eurovision,3,0), EUROVISION_STATE_NOT_EXIST);
+  CHECK(eurovisionRemoveVote(eurovision,-1,3), EUROVISION_INVALID_ID);
+  CHECK(eurovisionRemoveVote(eurovision,1,1), EUROVISION_SAME_STATE);
+  eurovisionRemoveState(eurovision,1);
+  CHECK(eurovisionRemoveVote(eurovision,1,1), EUROVISION_STATE_NOT_EXIST);
+  List ranking = eurovisionRunContest(eurovision, 12);
+
+  CHECK(listGetSize(ranking), 14);
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "croatia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "russia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "moldova"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "cyprus"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "spain"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "italy"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "france"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "germany"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "united kingdom"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "armenia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "austria"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "ireland"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "netherlands"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "sweden"), 0);
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+  return true;
+
+
+}
+
+/*
+ * Checks stuff with judges:
+ * errors with name, id and results - if id is more then once, or invalid.
+ * play with add and remove judges and checks the winner list.
+ */
+bool specialTest9_allJudgesAreCrazy() {
+  Eurovision eurovision = setupEurovision();
+  setupEurovisionStates(eurovision);
+  int *results;
+  results = makeJudgeResults( 15,  0, 1,  2, 3, 4, 5, 6,  7, 8); //make sweden first
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 0, "olsen", results),EUROVISION_SUCCESS,results);
+  free(results);
+
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "olsen", NULL),EUROVISION_NULL_ARGUMENT,results);
+
+  results = makeJudgeResults(0,9,1,2,3,4,5,6,7,8);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, -1, "tanel", results),EUROVISION_INVALID_ID,results);
+  free(results);
+
+  results = makeJudgeResults(0,1,1,2,3,4,5,6,7,8);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "tanel", results),EUROVISION_INVALID_ID,results);
+  free(results);
+
+  results = makeJudgeResults(0,-3,1,2,3,4,5,6,7,8);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "tanel", results),EUROVISION_INVALID_ID,results);
+  free(results);
+
+  results = makeJudgeResults(0,1,2,3,4,5,6,7,8,9);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "SHovava", results),EUROVISION_INVALID_NAME,results);
+  free(results);
+
+  results = makeJudgeResults(0,1,2,3,4,5,6,7,8,9);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "222zovava", results),EUROVISION_INVALID_NAME,results);
+  free(results);
+
+  results = makeJudgeResults(0,1,2,3,4,5,6,7,8,9);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, -1, "222zovava", results),EUROVISION_INVALID_ID,results);
+  free(results);
+
+  results = makeJudgeResults(0,0,2,3,4,5,6,7,8,9);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "222zovava", results),EUROVISION_INVALID_ID,results);
+  free(results);
+
+  results = makeJudgeResults(0,0,2,3,4,5,6,7,8,9);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "222zovava", results),EUROVISION_INVALID_ID,results); //make sure - order of EurovisionResult
+  free(results);
+
+  results = makeJudgeResults(0,-3,1,2,3,4,5,6,7,8);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "tanel", results),EUROVISION_INVALID_ID,results);
+  free(results);
+
+  results = makeJudgeResults(0,5435343,1,2,3,4,5,6,7,8);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "tanel", results),EUROVISION_STATE_NOT_EXIST,results);
+  free(results);
+
+  results = makeJudgeResults(0,13,1,2,3,4,5,6,7,8);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 0, "tanel", results),EUROVISION_JUDGE_ALREADY_EXIST,results);
+  free(results);
+
+  results = makeJudgeResults(13,14,2,3,4,5,6,7,8,9);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 1, "tanel", results),EUROVISION_SUCCESS,results); //make ireland first
+  // and vote for the netherlands.
+  free(results);
+
+  results = makeJudgeResults(13,14,2,3,4,5,6,7,8,9);
+  CHECK_WITH_FREE(eurovisionAddJudge(eurovision, 5, "tanel", results),EUROVISION_SUCCESS,results);
+  // and vote for the netherlands.
+  free(results);
+
+  CHECK(eurovisionRemoveJudge(eurovision,5),EUROVISION_SUCCESS);
+  CHECK(eurovisionRemoveJudge(eurovision,54),EUROVISION_JUDGE_NOT_EXIST);
+  CHECK(eurovisionRemoveJudge(eurovision,-1),EUROVISION_INVALID_ID);
+
+
+  eurovisionRemoveState(eurovision,14); // remove netherlands, now judge 1 removed!
+  // sweden first again.
+
+  List ranking = eurovisionRunContest(eurovision,21);
+
+  CHECK(listGetSize(ranking), 15);
+
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "sweden"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "israel"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "malta"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "croatia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "russia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "moldova"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "cyprus"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "spain"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "italy"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "france"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "germany"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "united kingdom"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "armenia"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "austria"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "ireland"), 0);
+
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+  return true;
+
+}
+
+/*
+ * Checks the "return order" of errors.
+ */
+bool specialTest10_statesGoingWild() {
+  Eurovision eurovision = setupEurovision();
+
+  CHECK(eurovisionAddState(eurovision,-1,"avocado","kadosh"),EUROVISION_INVALID_ID);
+  CHECK(eurovisionAddState(eurovision,0,"avocado","kadosh"),EUROVISION_SUCCESS);
+  CHECK(eurovisionAddState(eurovision,1,"avocado","kadosh"),EUROVISION_SUCCESS);
+  CHECK(eurovisionAddState(eurovision,1,"avocado","kadosh"),EUROVISION_STATE_ALREADY_EXIST);
+  CHECK(eurovisionAddState(eurovision,1,"Avocado","kadosh"),EUROVISION_INVALID_NAME);
+  CHECK(eurovisionAddState(eurovision,-1,"Avocado","kadosh"),EUROVISION_INVALID_ID);
+  CHECK(eurovisionAddState(eurovision,2,"Avocado","kadosh"),EUROVISION_INVALID_NAME);
+  CHECK(eurovisionAddState(eurovision,3,"hola",NULL),EUROVISION_NULL_ARGUMENT);
+
+  CHECK(eurovisionRemoveState(eurovision,-1),EUROVISION_INVALID_ID);
+  CHECK(eurovisionRemoveState(eurovision,3),EUROVISION_STATE_NOT_EXIST);
+  CHECK(eurovisionRemoveState(eurovision,0),EUROVISION_SUCCESS);
+
+  List ranking = eurovisionRunContest(eurovision,1);
+  CHECK(listGetSize(ranking), 1);
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "avocado"), 0);
+
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+  return true;
+
+}
+
+/*
+ * checks what happen when we remove all the votes for some state,
+ *
+ */
+bool specialTest11_GiveAndTake() {
+  Eurovision eurovision = setupEurovision();
+
+  eurovisionAddState(eurovision,0,"stark","winter is coming");
+  eurovisionAddState(eurovision,1,"targaryen","fire and blood");
+  eurovisionAddState(eurovision,2,"white walkers","fuck the wall");
+
+
+  giveVotes(eurovision,0,1,900); //give 900
+  for (int i=0;i<1000;i++) {
+    eurovisionRemoveVote(eurovision,0,1);
+  } //remove 1000, now targaryen needs to be removed from Data structure of votes.
+
+  giveVotes(eurovision,0,2,900);
+
+  List ranking = eurovisionRunContest(eurovision,60);
+  char *current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "white walkers"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "stark"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "targaryen"), 0);
+
+
+  listDestroy(ranking);
+  eurovisionDestroy(eurovision);
+  return true;
+}
+
+/*
+ * checks eurovisionRunGetFriendlyStates
+ */
+bool specialTest12_duasPoua() {
+  Eurovision eurovision = setupEurovision();
+
+  eurovisionAddState(eurovision,0,"stark","winter is coming");
+
+  List friendlies = eurovisionRunGetFriendlyStates(eurovision);
+  CHECK(listGetSize(friendlies),0);
+  listDestroy(friendlies);
+
+  eurovisionAddState(eurovision,1,"targaryen","fire and blood");
+  eurovisionAddState(eurovision,2,"white walkers","fuck the wall");
+  friendlies = eurovisionRunGetFriendlyStates(eurovision);
+  CHECK(listGetSize(friendlies),0);
+  listDestroy(friendlies);
+
+  // stark - targaryen
+  eurovisionAddVote(eurovision,0,1);
+  eurovisionAddVote(eurovision,1,0);
+
+  friendlies = eurovisionRunGetFriendlyStates(eurovision);
+  CHECK(listGetSize(friendlies), 1);
+  char *current = (char *)listGetFirst(friendlies);
+  CHECK(strcmp(current, "stark - targaryen"), 0);
+  listDestroy(friendlies);
+
+  //stark - white walkers
+  eurovisionRemoveVote(eurovision,0,1);
+  eurovisionAddVote(eurovision,2,0);
+  for (int i=0;i<1000;i++) {
+    eurovisionAddVote(eurovision,0,2);
+  }
+  friendlies = eurovisionRunGetFriendlyStates(eurovision);
+  CHECK(listGetSize(friendlies), 1);
+  current = (char *)listGetFirst(friendlies);
+  CHECK(strcmp(current, "stark - white walkers"), 0);
+  listDestroy(friendlies);
+
+  // no one
+  eurovisionRemoveState(eurovision,2);
+  friendlies = eurovisionRunGetFriendlyStates(eurovision);
+  CHECK(listGetSize(friendlies),0);
+
+  //just for fun
+  List ranking = eurovisionRunContest(eurovision,1);
+  CHECK(listGetSize(ranking), 2);
+  current = (char*)listGetFirst(ranking);
+  CHECK(strcmp(current, "stark"), 0);
+  current = (char*)listGetNext(ranking);
+  CHECK(strcmp(current, "targaryen"), 0);
+
+  listDestroy(ranking);
   listDestroy(friendlies);
   eurovisionDestroy(eurovision);
   return true;

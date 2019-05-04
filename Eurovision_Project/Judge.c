@@ -59,7 +59,7 @@ Judge judgeCopy(Judge judge) {
 	return newJudge;
 }
 
-bool isValidJudgeName(char* name)
+bool isValidJudgeName(const char* name)
 {
     int i = 0;
     while (*(name + i) != '\0')
