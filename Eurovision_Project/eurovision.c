@@ -9,7 +9,6 @@
 #include <string.h>
 
 #define FIRST 0
-#define INIT_SIZE 10
 #define MAX_POINTS 12
 
 //percantage limit for audience percent
@@ -107,7 +106,7 @@ static int getPointsFromState(Eurovision eurovision, State givingState,
     while (voteIterator != NULL)
     {
         int curVotes = *(int*)mapGet(getVotesGiven(givingState), voteIterator);
-        if ((num_votes <= curVotes && (*(int*)voteIterator < *(int*)takingState))
+        if ((num_votes <= curVotes && (*(int*)voteIterator <*(int*)takingState))
             || (num_votes < curVotes)) {
             rank++;//losing
         }
@@ -137,7 +136,7 @@ static MapResult setPointsReceivedState(Eurovision eurovision, State state)
         int points = getPointsFromState(eurovision, curState, stateIdPtr);
 
         MapResult status =
-            setPointsReceivedStateToState(state, curState, points);
+       setPointsReceivedStateToState(state,curState, points);
 
         if (status != MAP_SUCCESS) return status;
     }
@@ -263,7 +262,7 @@ static EurovisionResult checkValidState_help(Eurovision eurovision,
 {
     if (eurovision == NULL) return EUROVISION_NULL_ARGUMENT;
     if (isValidId(stateGiver) != EUROVISION_SUCCESS ||
-        isValidId(stateTaker) != EUROVISION_SUCCESS) return EUROVISION_INVALID_ID;
+        isValidId(stateTaker)!=EUROVISION_SUCCESS)return EUROVISION_INVALID_ID;
 
     State givingState = mapGet(eurovision->states, &stateGiver);
     State receivingState = mapGet(eurovision->states, &stateTaker);
