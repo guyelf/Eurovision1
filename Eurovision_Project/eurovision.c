@@ -424,7 +424,7 @@ EurovisionResult eurovisionRemoveState(Eurovision eurovision, int stateId){
 	{
 		State curState = mapGet(eurovision->states, stateIterator);
 
-	//removes the state at votesGiven MAP ! and checks that everything is good
+	//removes the state at votesGiven MAP ! and checks that everything is good 
 		status = mapRemove(getVotesGiven(curState), &stateId);
 		
 	    if(status != MAP_SUCCESS && 
